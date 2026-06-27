@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de TI — E.E. Francisco Pessoa</title>
+  <link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header>
+    <div class="header-logo"><img src="logo_francisco.png" alt="E.E. Francisco Pessoa" /></div>
+    <div>
+      <h1>Controle de TI</h1>
+      <p>E.E. Francisco Pessoa — registros apagam automaticamente à meia-noite</p>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="trocarAba('carrinhos')">
+      <i class="ti ti-device-laptop" aria-hidden="true"></i> Carrinhos
+    </button>
+    <button class="tab-btn" onclick="trocarAba('fones')">
+      <i class="ti ti-headphones" aria-hidden="true"></i> Fones
+    </button>
+  </div>
+
+  <!-- ABA CARRINHOS -->
+  <div id="aba-carrinhos" class="tab-panel active">
+    <div class="container">
+      <div class="resumo">
+        <div class="stat">
+          <div class="stat-n" id="s-total">0</div>
+          <div class="stat-l">registros hoje</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" id="s-out">0</div>
+          <div class="stat-l">em uso agora</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" id="s-nb">0</div>
+          <div class="stat-l">dispositivos fora</div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">Registrar saída de dispositivos</div>
+        <div class="form-row">
+          <div class="field">
+            <label for="carrinho">Carrinho</label>
+            <select id="carrinho">
+              <option value="">Selecionar...</option>
+              <option>Carrinho 1 | Notebooks</option>
+              <option>Carrinho 2 | Notebooks</option>
+              <option>Carrinho 3 | ChromeBooks</option>
+              <option>Carrinho 4 | Tablets</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="professor">Professor(a)</label>
+            <input id="professor" placeholder="Nome do professor" />
+          </div>
+          <div class="field">
+            <label for="sala">Sala</label>
+            <input id="sala" placeholder="Ex: 1-Ano A" />
+          </div>
+          <div class="field">
+            <label>Quantidade</label>
+            <div class="qtd-tipo">
+              <select id="tipo-qtd" onchange="toggleQtd()">
+                <option value="parcial">Alguns</option>
+                <option value="total">Carrinho todo</option>
+              </select>
+              <input id="qtd" type="number" min="1" max="40" placeholder="Qtd" />
+            </div>
+          </div>
+        </div>
+        <div class="form-btn-row">
+          <button class="primary" onclick="registrar()">
+            <i class="ti ti-plus" aria-hidden="true"></i> Registrar saída
+          </button>
+        </div>
+      </div>
+
+      <div class="data-badge" id="data-hoje"></div>
+      <div class="registros" id="lista"></div>
+    </div>
+  </div>
+
+  <!-- ABA FONES -->
+  <div id="aba-fones" class="tab-panel">
+    <div class="container">
+      <div class="resumo">
+        <div class="stat">
+          <div class="stat-n" id="f-total">0</div>
+          <div class="stat-l">registros hoje</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" id="f-out">0</div>
+          <div class="stat-l">em uso agora</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" id="f-nb">0</div>
+          <div class="stat-l">fones fora</div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">Registrar saída de fones</div>
+        <div class="form-row-fones">
+          <div class="field">
+            <label for="f-professor">Professor(a)</label>
+            <input id="f-professor" placeholder="Nome do professor/aluno" />
+          </div>
+          <div class="field">
+            <label for="f-sala">Sala</label>
+            <input id="f-sala" placeholder="Ex: 1-Ano A" />
+          </div>
+          <div class="field">
+            <label for="f-qtd">Qtd</label>
+            <input id="f-qtd" type="number" min="1" max="60" placeholder="Qtd" />
+          </div>
+        </div>
+        <div class="form-btn-row">
+          <button class="primary" onclick="registrarFone()">
+            <i class="ti ti-plus" aria-hidden="true"></i> Registrar saída
+          </button>
+        </div>
+      </div>
+
+      <div class="data-badge" id="f-data-hoje"></div>
+      <div class="registros" id="f-lista"></div>
+    </div>
+  </div>
+
+  <script>
+    /* ── UTILS ── */
+    function hoje() { return new Date().toDateString(); }
+    function horaAgora() { return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }
+    function dataStr() {
+      const s = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function carregarKey(key) {
+      const dateKey = key + '_date';
+      if (localStorage.getItem(dateKey) !== hoje()) {
+        localStorage.removeItem(key);
+        localStorage.setItem(dateKey, hoje());
+      }
+      return JSON.parse(localStorage.getItem(key) || '[]');
+    }
+
+    function salvarKey(key, data) {
+      localStorage.setItem(key, JSON.stringify(data));
+      localStorage.setItem(key + '_date', hoje());
+    }
+
+    /* ── TABS ── */
+    function trocarAba(aba) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('aba-' + aba).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    /* ── CARRINHOS ── */
+    const KC = 'carrinhos_v3';
+
+    function toggleQtd() {
+      const tipo = document.getElementById('tipo-qtd').value;
+      const qtdInput = document.getElementById('qtd');
+      if (tipo === 'total') {
+        qtdInput.value = ''; qtdInput.placeholder = 'Todo'; qtdInput.disabled = true; qtdInput.style.opacity = '0.4';
+      } else {
+        qtdInput.disabled = false; qtdInput.style.opacity = '1'; qtdInput.placeholder = 'Qtd'; qtdInput.value = '';
+      }
+    }
+
+    function registrar() {
+      const c = document.getElementById('carrinho').value;
+      const p = document.getElementById('professor').value.trim();
+      const s = document.getElementById('sala').value.trim();
+      const tipo = document.getElementById('tipo-qtd').value;
+      const qtdRaw = parseInt(document.getElementById('qtd').value) || 0;
+      if (!c || !p || !s) { alert('Preenche carrinho, professor e sala!'); return; }
+      if (tipo === 'parcial' && !qtdRaw) { alert('Informe a quantidade!'); return; }
+
+      const data = carregarKey(KC);
+      data.push({
+        id: Date.now(), carrinho: c, professor: p, sala: s,
+        qtd: tipo === 'total' ? 999 : qtdRaw,
+        qtdLabel: tipo === 'total' ? 'carrinho completo' : qtdRaw,
+        total: tipo === 'total',
+        hora: horaAgora(), devolvido: false
+      });
+      salvarKey(KC, data);
+
+      ['professor', 'sala', 'qtd'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('qtd').disabled = false;
+      document.getElementById('qtd').style.opacity = '1';
+      document.getElementById('qtd').placeholder = 'Qtd';
+      document.getElementById('carrinho').value = '';
+      document.getElementById('tipo-qtd').value = 'parcial';
+      renderCarrinhos();
+    }
+
+    function devolverC(id) {
+      const data = carregarKey(KC);
+      const i = data.findIndex(x => x.id === id);
+      if (i > -1) { data[i].devolvido = true; data[i].horaVolta = horaAgora(); }
+      salvarKey(KC, data); renderCarrinhos();
+    }
+
+    function deletarC(id) {
+      salvarKey(KC, carregarKey(KC).filter(x => x.id !== id));
+      renderCarrinhos();
+    }
+
+    function iconePorCarrinho(nome) {
+      if (nome.toLowerCase().includes('tablet')) return 'ti-device-ipad';
+      if (nome.toLowerCase().includes('chrome')) return 'ti-brand-chrome';
+      return 'ti-device-laptop';
+    }
+
+    function renderCarrinhos() {
+      const data = carregarKey(KC);
+      document.getElementById('data-hoje').textContent = dataStr();
+      const lista = document.getElementById('lista');
+
+      if (!data.length) {
+        lista.innerHTML = `<div class="empty"><i class="ti ti-package" aria-hidden="true"></i>Nenhum registro ainda hoje.</div>`;
+        document.getElementById('s-total').textContent = 0;
+        document.getElementById('s-out').textContent = 0;
+        document.getElementById('s-nb').textContent = 0;
+        return;
+      }
+
+      lista.innerHTML = '';
+      [...data].reverse().forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'card' + (r.devolvido ? ' devolvido' : '');
+        const icone = iconePorCarrinho(r.carrinho);
+        const qtdTexto = r.total ? 'Carrinho completo' : `${r.qtdLabel} dispositivo${r.qtdLabel > 1 ? 's' : ''}`;
+        div.innerHTML = `
+        <div class="card-icon"><i class="ti ${icone}" aria-hidden="true"></i></div>
+        <div class="card-info">
+          <div class="card-title">${r.carrinho} — ${qtdTexto}</div>
+          <div class="card-sub">Prof. ${r.professor} · Sala ${r.sala}</div>
+          <div class="card-hora">Saída ${r.hora}${r.horaVolta ? ' · Devolvido ' + r.horaVolta : ''}</div>
+        </div>
+        <div class="card-actions">
+          <span class="badge ${r.devolvido ? 'badge-in' : 'badge-out'}">${r.devolvido ? 'Devolvido' : 'Em uso'}</span>
+          ${!r.devolvido ? `<button class="btn-dev" onclick="devolverC(${r.id})">✓ Devolvido</button>` : ''}
+          <button class="btn-del" onclick="deletarC(${r.id})" aria-label="Excluir">✕</button>
+        </div>`;
+        lista.appendChild(div);
+      });
+
+      const out = data.filter(x => !x.devolvido);
+      document.getElementById('s-total').textContent = data.length;
+      document.getElementById('s-out').textContent = out.length;
+      const nb = out.reduce((a, x) => x.total ? a : a + x.qtd, 0);
+      document.getElementById('s-nb').textContent = out.some(x => x.total) ? nb + '+' : nb;
+    }
+
+    /* ── FONES ── */
+    const KF = 'fones_v1';
+
+    function registrarFone() {
+      const p = document.getElementById('f-professor').value.trim();
+      const s = document.getElementById('f-sala').value.trim();
+      const q = parseInt(document.getElementById('f-qtd').value) || 0;
+      if (!p || !s || !q) { alert('Preenche professor, sala e quantidade!'); return; }
+
+      const data = carregarKey(KF);
+      data.push({ id: Date.now(), professor: p, sala: s, qtd: q, hora: horaAgora(), devolvido: false });
+      salvarKey(KF, data);
+
+      ['f-professor', 'f-sala', 'f-qtd'].forEach(id => document.getElementById(id).value = '');
+      renderFones();
+    }
+
+    function devolverF(id) {
+      const data = carregarKey(KF);
+      const i = data.findIndex(x => x.id === id);
+      if (i > -1) { data[i].devolvido = true; data[i].horaVolta = horaAgora(); }
+      salvarKey(KF, data); renderFones();
+    }
+
+    function deletarF(id) {
+      salvarKey(KF, carregarKey(KF).filter(x => x.id !== id));
+      renderFones();
+    }
+
+    function renderFones() {
+      const data = carregarKey(KF);
+      document.getElementById('f-data-hoje').textContent = dataStr();
+      const lista = document.getElementById('f-lista');
+
+      if (!data.length) {
+        lista.innerHTML = `<div class="empty"><i class="ti ti-headphones" aria-hidden="true"></i>Nenhum fone registrado hoje.</div>`;
+        document.getElementById('f-total').textContent = 0;
+        document.getElementById('f-out').textContent = 0;
+        document.getElementById('f-nb').textContent = 0;
+        return;
+      }
+
+      lista.innerHTML = '';
+      [...data].reverse().forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'card' + (r.devolvido ? ' devolvido' : '');
+        div.innerHTML = `
+        <div class="card-icon"><i class="ti ti-headphones" aria-hidden="true"></i></div>
+        <div class="card-info">
+          <div class="card-title">${r.qtd} fone${r.qtd > 1 ? 's' : ''}</div>
+          <div class="card-sub">Prof. ${r.professor} · Sala ${r.sala}</div>
+          <div class="card-hora">Saída ${r.hora}${r.horaVolta ? ' · Devolvido ' + r.horaVolta : ''}</div>
+        </div>
+        <div class="card-actions">
+          <span class="badge ${r.devolvido ? 'badge-in' : 'badge-out'}">${r.devolvido ? 'Devolvido' : 'Em uso'}</span>
+          ${!r.devolvido ? `<button class="btn-dev" onclick="devolverF(${r.id})">✓ Devolvido</button>` : ''}
+          <button class="btn-del" onclick="deletarF(${r.id})" aria-label="Excluir">✕</button>
+        </div>`;
+        lista.appendChild(div);
+      });
+
+      const out = data.filter(x => !x.devolvido);
+      document.getElementById('f-total').textContent = data.length;
+      document.getElementById('f-out').textContent = out.length;
+      document.getElementById('f-nb').textContent = out.reduce((a, x) => a + x.qtd, 0);
+    }
+
+    /* ── INIT ── */
+    renderCarrinhos();
+    renderFones();
+  </script>
+</body>
+
+</html>
