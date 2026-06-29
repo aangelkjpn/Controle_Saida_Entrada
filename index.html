@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle de TI — E.E. Francisco Pessoa</title>
-  <link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -20,12 +19,8 @@
   </header>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="trocarAba('carrinhos')">
-      <i class="ti ti-device-laptop" aria-hidden="true"></i> Carrinhos
-    </button>
-    <button class="tab-btn" onclick="trocarAba('fones')">
-      <i class="ti ti-headphones" aria-hidden="true"></i> Fones
-    </button>
+    <button class="tab-btn active" onclick="trocarAba('carrinhos', this)">Carrinhos</button>
+    <button class="tab-btn" onclick="trocarAba('fones', this)">Fones</button>
   </div>
 
   <!-- ABA CARRINHOS -->
@@ -60,12 +55,34 @@
             </select>
           </div>
           <div class="field">
-            <label for="professor">Professor(a)</label>
-            <input id="professor" placeholder="Nome do professor" />
+            <label for="professor">Professor(a) | Aluno(a)</label>
+            <input id="professor" placeholder="Nome Professor/Aluno" />
           </div>
-          <div class="field">
-            <label for="sala">Sala</label>
-            <input id="sala" placeholder="Ex: 1-Ano A" />
+          <div class="field field-sm">
+            <label for="turma">Turma</label>
+            <select id="turma">
+              <option value="">Selecionar...</option>
+              <optgroup label="── Ensino Médio ──">
+                <option>1º A</option>
+                <option>1º B</option>
+                <option>2º A</option>
+                <option>2º B</option>
+                <option>3º A</option>
+                <option>3º B</option>
+              </optgroup>
+              <optgroup label="── Anos Finais ──">
+                <option>6º A</option>
+                <option>6º B</option>
+                <option>6º C</option>
+                <option>7º A</option>
+                <option>7º B</option>
+                <option>8º A</option>
+                <option>8º B</option>
+                <option>9º A</option>
+                <option>9º B</option>
+                <option>9º C</option>
+              </optgroup>
+            </select>
           </div>
           <div class="field">
             <label>Quantidade</label>
@@ -79,14 +96,12 @@
           </div>
         </div>
         <div class="form-btn-row">
-          <button class="primary" onclick="registrar()">
-            <i class="ti ti-plus" aria-hidden="true"></i> Registrar saída
-          </button>
+          <button class="primary" onclick="registrar()">+ Registrar saída</button>
         </div>
       </div>
 
       <div class="data-badge" id="data-hoje"></div>
-      <div class="registros" id="lista"></div>
+      <div id="lista"></div>
     </div>
   </div>
 
@@ -110,34 +125,71 @@
 
       <div class="form-card">
         <div class="form-card-title">Registrar saída de fones</div>
-        <div class="form-row-fones">
+        <div class="form-row">
           <div class="field">
-            <label for="f-professor">Professor(a)</label>
-            <input id="f-professor" placeholder="Nome do professor/aluno" />
+            <label for="f-professor">Professor(a) | Aluno(a)</label>
+            <input id="f-professor" placeholder="Nome Professor/Aluno" />
           </div>
-          <div class="field">
-            <label for="f-sala">Sala</label>
-            <input id="f-sala" placeholder="Ex: 1-Ano A" />
+          <div class="field field-sm">
+            <label for="f-turma">Turma</label>
+            <select id="f-turma">
+              <option value="">Selecionar...</option>
+              <optgroup label="── Ensino Médio ──">
+                <option>1º A</option>
+                <option>1º B</option>
+                <option>2º A</option>
+                <option>2º B</option>
+                <option>3º A</option>
+                <option>3º B</option>
+              </optgroup>
+              <optgroup label="── Anos Finais ──">
+                <option>6º A</option>
+                <option>6º B</option>
+                <option>6º C</option>
+                <option>7º A</option>
+                <option>7º B</option>
+                <option>8º A</option>
+                <option>8º B</option>
+                <option>9º A</option>
+                <option>9º B</option>
+                <option>9º C</option>
+              </optgroup>
+            </select>
           </div>
-          <div class="field">
-            <label for="f-qtd">Qtd</label>
+          <div class="field field-xs">
+            <label for="f-qtd">Quantidade</label>
             <input id="f-qtd" type="number" min="1" max="60" placeholder="Qtd" />
           </div>
         </div>
         <div class="form-btn-row">
-          <button class="primary" onclick="registrarFone()">
-            <i class="ti ti-plus" aria-hidden="true"></i> Registrar saída
-          </button>
+          <button class="primary" onclick="registrarFone()">+ Registrar saída</button>
         </div>
       </div>
 
       <div class="data-badge" id="f-data-hoje"></div>
-      <div class="registros" id="f-lista"></div>
+      <div id="f-lista"></div>
     </div>
   </div>
 
   <script>
-    /* ── UTILS ── */
+    // Ordem e agrupamento por ANO
+    const ANOS = [
+      { label: 'Ensino Médio', prefixos: ['1º', '2º', '3º'] },
+      { label: 'Anos Finais', prefixos: ['6º', '7º', '8º', '9º'] },
+    ];
+
+    function anoDeturma(turma) {
+      // "6º A" → "6º"
+      return turma.split(' ')[0];
+    }
+
+    function grupoDeAno(ano) {
+      for (const g of ANOS) {
+        if (g.prefixos.includes(ano)) return g.label;
+      }
+      return 'Outros';
+    }
+
     function hoje() { return new Date().toDateString(); }
     function horaAgora() { return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }
     function dataStr() {
@@ -146,10 +198,10 @@
     }
 
     function carregarKey(key) {
-      const dateKey = key + '_date';
-      if (localStorage.getItem(dateKey) !== hoje()) {
+      const dk = key + '_date';
+      if (localStorage.getItem(dk) !== hoje()) {
         localStorage.removeItem(key);
-        localStorage.setItem(dateKey, hoje());
+        localStorage.setItem(dk, hoje());
       }
       return JSON.parse(localStorage.getItem(key) || '[]');
     }
@@ -159,16 +211,15 @@
       localStorage.setItem(key + '_date', hoje());
     }
 
-    /* ── TABS ── */
-    function trocarAba(aba) {
+    function trocarAba(aba, btn) {
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('aba-' + aba).classList.add('active');
-      event.currentTarget.classList.add('active');
+      btn.classList.add('active');
     }
 
     /* ── CARRINHOS ── */
-    const KC = 'carrinhos_v3';
+    const KC = 'carrinhos_v5';
 
     function toggleQtd() {
       const tipo = document.getElementById('tipo-qtd').value;
@@ -183,27 +234,28 @@
     function registrar() {
       const c = document.getElementById('carrinho').value;
       const p = document.getElementById('professor').value.trim();
-      const s = document.getElementById('sala').value.trim();
+      const turma = document.getElementById('turma').value;
       const tipo = document.getElementById('tipo-qtd').value;
       const qtdRaw = parseInt(document.getElementById('qtd').value) || 0;
-      if (!c || !p || !s) { alert('Preenche carrinho, professor e sala!'); return; }
+      if (!c || !p || !turma) { alert('Preenche carrinho, professor e turma!'); return; }
       if (tipo === 'parcial' && !qtdRaw) { alert('Informe a quantidade!'); return; }
 
       const data = carregarKey(KC);
       data.push({
-        id: Date.now(), carrinho: c, professor: p, sala: s,
+        id: Date.now(), carrinho: c, professor: p, turma,
         qtd: tipo === 'total' ? 999 : qtdRaw,
         qtdLabel: tipo === 'total' ? 'carrinho completo' : qtdRaw,
         total: tipo === 'total',
         hora: horaAgora(), devolvido: false
       });
       salvarKey(KC, data);
-
-      ['professor', 'sala', 'qtd'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('professor').value = '';
+      document.getElementById('qtd').value = '';
       document.getElementById('qtd').disabled = false;
       document.getElementById('qtd').style.opacity = '1';
       document.getElementById('qtd').placeholder = 'Qtd';
       document.getElementById('carrinho').value = '';
+      document.getElementById('turma').value = '';
       document.getElementById('tipo-qtd').value = 'parcial';
       renderCarrinhos();
     }
@@ -220,10 +272,82 @@
       renderCarrinhos();
     }
 
-    function iconePorCarrinho(nome) {
-      if (nome.toLowerCase().includes('tablet')) return 'ti-device-ipad';
-      if (nome.toLowerCase().includes('chrome')) return 'ti-brand-chrome';
-      return 'ti-device-laptop';
+    function buildGrupos(data) {
+      // agrupa por ANO (ex: "6º"), depois por turma completa (ex: "6º A")
+      const porAno = {};
+      data.forEach(r => {
+        const ano = anoDeturma(r.turma);
+        if (!porAno[ano]) porAno[ano] = {};
+        if (!porAno[ano][r.turma]) porAno[ano][r.turma] = [];
+        porAno[ano][r.turma].push(r);
+      });
+      return porAno;
+    }
+
+    function renderCard(r, devolverFn, deletarFn) {
+      const qtdTexto = r.total ? 'Carrinho completo' : `${r.qtdLabel} disp.`;
+      return `
+      <div class="card${r.devolvido ? ' devolvido' : ''}">
+        <div class="card-info">
+          <div class="card-title">${r.carrinho ? r.carrinho + ' — ' : ''}${r.total ? 'Carrinho completo' : (r.qtd + ' disp.')}</div>
+          <div class="card-sub">Prof. ${r.professor} · <strong>${r.turma}</strong></div>
+          <div class="card-hora">Saída ${r.hora}${r.horaVolta ? ' · Devolvido ' + r.horaVolta : ''}</div>
+        </div>
+        <div class="card-actions">
+          <span class="badge ${r.devolvido ? 'badge-in' : 'badge-out'}">${r.devolvido ? 'Devolvido' : 'Em uso'}</span>
+          ${!r.devolvido ? `<button class="btn-dev" onclick="${devolverFn}(${r.id})">✓ Devolvido</button>` : ''}
+          <button class="btn-del" onclick="${deletarFn}(${r.id})">✕</button>
+        </div>
+      </div>`;
+    }
+
+    function renderGrupos(data, devolverFn, deletarFn) {
+      if (!data.length) return null;
+
+      const porAno = buildGrupos(data);
+
+      // ordem dos anos
+      const ordemAnos = ['1º', '2º', '3º', '6º', '7º', '8º', '9º'];
+      const anosPresentes = Object.keys(porAno).sort((a, b) =>
+        ordemAnos.indexOf(a) - ordemAnos.indexOf(b)
+      );
+
+      return anosPresentes.map(ano => {
+        const turmasDoAno = porAno[ano];
+        const turmasOrdenadas = Object.keys(turmasDoAno).sort();
+        const grupo = grupoDeAno(ano);
+
+        // total em uso nesse ano
+        const emUsoAno = Object.values(turmasDoAno).flat().filter(r => !r.devolvido).length;
+
+        const turmasHTML = turmasOrdenadas.map(turma => {
+          const registros = turmasDoAno[turma];
+          const emUso = registros.filter(r => !r.devolvido).length;
+
+          return `
+          <div class="subgrupo">
+            <div class="subgrupo-header">
+              <span class="subgrupo-turma">${turma}</span>
+              <span class="subgrupo-badge ${emUso > 0 ? 'badge-ativo' : 'badge-ok'}">
+                ${emUso > 0 ? emUso + ' em uso' : '✓ devolvido'}
+              </span>
+            </div>
+            ${registros.map(r => renderCard(r, devolverFn, deletarFn)).join('')}
+          </div>`;
+        }).join('');
+
+        return `
+        <div class="grupo">
+          <div class="grupo-header">
+            <div>
+              <span class="grupo-ano">${ano} Ano</span>
+              <span class="grupo-label">${grupo}</span>
+            </div>
+            <span class="grupo-count">${emUsoAno > 0 ? emUsoAno + ' em uso' : 'tudo devolvido'}</span>
+          </div>
+          <div class="grupo-body">${turmasHTML}</div>
+        </div>`;
+      }).join('');
     }
 
     function renderCarrinhos() {
@@ -231,56 +355,31 @@
       document.getElementById('data-hoje').textContent = dataStr();
       const lista = document.getElementById('lista');
 
-      if (!data.length) {
-        lista.innerHTML = `<div class="empty"><i class="ti ti-package" aria-hidden="true"></i>Nenhum registro ainda hoje.</div>`;
-        document.getElementById('s-total').textContent = 0;
-        document.getElementById('s-out').textContent = 0;
-        document.getElementById('s-nb').textContent = 0;
-        return;
-      }
-
-      lista.innerHTML = '';
-      [...data].reverse().forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'card' + (r.devolvido ? ' devolvido' : '');
-        const icone = iconePorCarrinho(r.carrinho);
-        const qtdTexto = r.total ? 'Carrinho completo' : `${r.qtdLabel} dispositivo${r.qtdLabel > 1 ? 's' : ''}`;
-        div.innerHTML = `
-        <div class="card-icon"><i class="ti ${icone}" aria-hidden="true"></i></div>
-        <div class="card-info">
-          <div class="card-title">${r.carrinho} — ${qtdTexto}</div>
-          <div class="card-sub">Prof. ${r.professor} · Sala ${r.sala}</div>
-          <div class="card-hora">Saída ${r.hora}${r.horaVolta ? ' · Devolvido ' + r.horaVolta : ''}</div>
-        </div>
-        <div class="card-actions">
-          <span class="badge ${r.devolvido ? 'badge-in' : 'badge-out'}">${r.devolvido ? 'Devolvido' : 'Em uso'}</span>
-          ${!r.devolvido ? `<button class="btn-dev" onclick="devolverC(${r.id})">✓ Devolvido</button>` : ''}
-          <button class="btn-del" onclick="deletarC(${r.id})" aria-label="Excluir">✕</button>
-        </div>`;
-        lista.appendChild(div);
-      });
-
       const out = data.filter(x => !x.devolvido);
       document.getElementById('s-total').textContent = data.length;
       document.getElementById('s-out').textContent = out.length;
       const nb = out.reduce((a, x) => x.total ? a : a + x.qtd, 0);
       document.getElementById('s-nb').textContent = out.some(x => x.total) ? nb + '+' : nb;
+
+      const html = renderGrupos(data, 'devolverC', 'deletarC');
+      lista.innerHTML = html || '<div class="empty">📦 Nenhum registro ainda hoje.</div>';
     }
 
     /* ── FONES ── */
-    const KF = 'fones_v1';
+    const KF = 'fones_v3';
 
     function registrarFone() {
       const p = document.getElementById('f-professor').value.trim();
-      const s = document.getElementById('f-sala').value.trim();
+      const turma = document.getElementById('f-turma').value;
       const q = parseInt(document.getElementById('f-qtd').value) || 0;
-      if (!p || !s || !q) { alert('Preenche professor, sala e quantidade!'); return; }
+      if (!p || !turma || !q) { alert('Preenche professor, turma e quantidade!'); return; }
 
       const data = carregarKey(KF);
-      data.push({ id: Date.now(), professor: p, sala: s, qtd: q, hora: horaAgora(), devolvido: false });
+      data.push({ id: Date.now(), professor: p, turma, qtd: q, hora: horaAgora(), devolvido: false });
       salvarKey(KF, data);
-
-      ['f-professor', 'f-sala', 'f-qtd'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('f-professor').value = '';
+      document.getElementById('f-qtd').value = '';
+      document.getElementById('f-turma').value = '';
       renderFones();
     }
 
@@ -301,40 +400,17 @@
       document.getElementById('f-data-hoje').textContent = dataStr();
       const lista = document.getElementById('f-lista');
 
-      if (!data.length) {
-        lista.innerHTML = `<div class="empty"><i class="ti ti-headphones" aria-hidden="true"></i>Nenhum fone registrado hoje.</div>`;
-        document.getElementById('f-total').textContent = 0;
-        document.getElementById('f-out').textContent = 0;
-        document.getElementById('f-nb').textContent = 0;
-        return;
-      }
-
-      lista.innerHTML = '';
-      [...data].reverse().forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'card' + (r.devolvido ? ' devolvido' : '');
-        div.innerHTML = `
-        <div class="card-icon"><i class="ti ti-headphones" aria-hidden="true"></i></div>
-        <div class="card-info">
-          <div class="card-title">${r.qtd} fone${r.qtd > 1 ? 's' : ''}</div>
-          <div class="card-sub">Prof. ${r.professor} · Sala ${r.sala}</div>
-          <div class="card-hora">Saída ${r.hora}${r.horaVolta ? ' · Devolvido ' + r.horaVolta : ''}</div>
-        </div>
-        <div class="card-actions">
-          <span class="badge ${r.devolvido ? 'badge-in' : 'badge-out'}">${r.devolvido ? 'Devolvido' : 'Em uso'}</span>
-          ${!r.devolvido ? `<button class="btn-dev" onclick="devolverF(${r.id})">✓ Devolvido</button>` : ''}
-          <button class="btn-del" onclick="deletarF(${r.id})" aria-label="Excluir">✕</button>
-        </div>`;
-        lista.appendChild(div);
-      });
-
       const out = data.filter(x => !x.devolvido);
       document.getElementById('f-total').textContent = data.length;
       document.getElementById('f-out').textContent = out.length;
       document.getElementById('f-nb').textContent = out.reduce((a, x) => a + x.qtd, 0);
+
+      // adapta pra fones (sem carrinho)
+      const dataAdaptada = data.map(r => ({ ...r, carrinho: null, total: false, qtdLabel: r.qtd }));
+      const html = renderGrupos(dataAdaptada, 'devolverF', 'deletarF');
+      lista.innerHTML = html || '<div class="empty">🎧 Nenhum fone registrado hoje.</div>';
     }
 
-    /* ── INIT ── */
     renderCarrinhos();
     renderFones();
   </script>
