@@ -473,3 +473,101 @@ button.primary:active {
   align-items: center !important;
   justify-content: center !important;
 }
+
+/* ── GRUPOS POR ANO ── */
+.grupo {
+  margin-bottom: 1.25rem;
+  border: 0.5px solid var(--border-strong);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.grupo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--surface-1);
+  border-bottom: 0.5px solid var(--border-strong);
+}
+
+.grupo-ano {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-right: 8px;
+}
+
+.grupo-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.grupo-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--surface-2);
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border);
+}
+
+.grupo-body {
+  background: var(--surface-2);
+}
+
+/* ── SUBGRUPOS POR TURMA ── */
+.subgrupo {
+  border-bottom: 0.5px solid var(--border);
+}
+
+.subgrupo:last-child {
+  border-bottom: none;
+}
+
+.subgrupo-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 16px;
+  background: var(--surface-0);
+  border-bottom: 0.5px solid var(--border);
+}
+
+.subgrupo-turma {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.subgrupo-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.badge-ativo {
+  background: var(--bg-warning);
+  color: var(--text-warning);
+}
+
+.badge-ok {
+  background: var(--bg-success);
+  color: var(--text-success);
+}
+
+.subgrupo .card {
+  border-radius: 0;
+  border: none;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.subgrupo .card:last-child {
+  border-bottom: none;
+}
+
+.field-xs {
+  flex: 0 0 80px !important;
+  min-width: 0 !important;
+}
