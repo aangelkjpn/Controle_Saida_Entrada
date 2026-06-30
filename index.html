@@ -290,7 +290,7 @@
       <div class="card${r.devolvido ? ' devolvido' : ''}">
         <div class="card-info">
           <div class="card-title">${r.carrinho ? r.carrinho + ' — ' : ''}${r.total ? 'Carrinho completo' : (r.qtd + ' disp.')}</div>
-          <div class="card-sub">Prof. ${r.professor} · <strong>${r.turma}</strong></div>
+          <div class="card-sub">Professor/Aluno: ${r.professor} · <strong>${r.turma}</strong></div>
           <div class="card-hora">Saída ${r.hora}${r.horaVolta ? ' · Devolvido ' + r.horaVolta : ''}</div>
         </div>
         <div class="card-actions">
