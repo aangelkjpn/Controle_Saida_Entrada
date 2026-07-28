@@ -183,12 +183,14 @@
   </div>
 
   <script>
+
     const ANOS = [
       { label: 'Ensino Médio', prefixos: ['1º', '2º', '3º'] },
       { label: 'Anos Finais', prefixos: ['6º', '7º', '8º', '9º'] },
     ];
 
     function anoDeturma(turma) {
+
       return turma.split(' ')[0];
     }
 
@@ -362,6 +364,7 @@
     }
 
     function buildGrupos(data) {
+
       const porAno = {};
       data.forEach(r => {
         const ano = anoDeturma(r.turma);
@@ -388,6 +391,7 @@
         <div class="card-actions">
           <span class="badge ${r.devolvido ? 'badge-in' : 'badge-out'}">${r.devolvido ? 'Devolvido' : 'Em uso'}</span>
           ${!r.devolvido ? `<button class="btn-dev" onclick="${devolverFn}(${r.id})">✓ Devolvido</button>` : ''}
+          <button class="btn-edit" onclick="abrirModalEditar(${r.id})" title="Editar números">✏️</button>
           <button class="btn-del" onclick="${deletarFn}(${r.id})">✕</button>
         </div>
       </div>`;
@@ -398,7 +402,6 @@
 
       const porAno = buildGrupos(data);
 
-      // ordem dos anos
       const ordemAnos = ['1º', '2º', '3º', '6º', '7º', '8º', '9º'];
       const anosPresentes = Object.keys(porAno).sort((a, b) =>
         ordemAnos.indexOf(a) - ordemAnos.indexOf(b)
@@ -409,7 +412,6 @@
         const turmasOrdenadas = Object.keys(turmasDoAno).sort();
         const grupo = grupoDeAno(ano);
 
-        // total em uso nesse ano
         const emUsoAno = Object.values(turmasDoAno).flat().filter(r => !r.devolvido).length;
 
         const turmasHTML = turmasOrdenadas.map(turma => {
@@ -502,9 +504,98 @@
       lista.innerHTML = html || '<div class="empty">🎧 Nenhum fone registrado hoje.</div>';
     }
 
+    /* ── MODAL EDITAR NÚMEROS ── */
+    let editTagsTemp = [];
+    let editLimite = 0;
+    let editPrefixo = '';
+
+    function abrirModalEditar(id) {
+      const data = carregarKey(KC);
+      const r = data.find(x => x.id === id);
+      if (!r) return;
+      document.getElementById('edit-reg-id').value = id;
+      editPrefixo = prefixoCarrinho(r.carrinho || '');
+      editLimite = r.total ? 50 : r.qtd;
+      editTagsTemp = [...(r.dispositivos || [])];
+      renderEditGrid();
+      document.getElementById('modal-editar').classList.remove('hidden');
+    }
+
+    function fecharModalEditar() {
+      document.getElementById('modal-editar').classList.add('hidden');
+    }
+
+    function toggleEditNum(label) {
+      const i = editTagsTemp.indexOf(label);
+      if (i > -1) editTagsTemp.splice(i, 1);
+      else if (editTagsTemp.length < editLimite) editTagsTemp.push(label);
+      editTagsTemp.sort((a, b) => parseInt(a.split('-')[1]) - parseInt(b.split('-')[1]));
+      renderEditGrid();
+    }
+
+    function renderEditGrid() {
+      const sel = editTagsTemp.length;
+      const counterText = document.getElementById('edit-counter-text');
+      const counterStatus = document.getElementById('edit-counter-status');
+      counterText.textContent = `${sel} de ${editLimite} selecionados`;
+      if (sel === 0) { counterStatus.textContent = ''; counterStatus.className = ''; }
+      else if (sel < editLimite) { counterStatus.textContent = `faltam ${editLimite - sel}`; counterStatus.className = 'counter-warn'; }
+      else { counterStatus.textContent = '✓ completo'; counterStatus.className = 'counter-ok'; }
+
+      document.getElementById('edit-num-grid').innerHTML = Array.from({ length: 50 }, (_, i) => {
+        const n = String(i + 1).padStart(2, '0');
+        const label = `${editPrefixo}-${n}`;
+        const isSel = editTagsTemp.includes(label);
+        const bloqueado = !isSel && editTagsTemp.length >= editLimite;
+        return `<button type="button" class="num-btn${isSel ? ' selected' : ''}${bloqueado ? ' bloqueado' : ''}"
+          onclick="toggleEditNum('${label}')" ${bloqueado ? 'disabled' : ''}>${n}</button>`;
+      }).join('');
+
+      document.getElementById('edit-tags').innerHTML = editTagsTemp.map(t =>
+        `<span class="tag" style="font-size:12px">${t}</span>`
+      ).join('');
+    }
+
+    function salvarEdicaoNums() {
+      const id = parseInt(document.getElementById('edit-reg-id').value);
+      if (editTagsTemp.length !== editLimite) {
+        alert(`Selecione exatamente ${editLimite} dispositivo${editLimite > 1 ? 's' : ''} antes de salvar.`);
+        return;
+      }
+      const data = carregarKey(KC);
+      const i = data.findIndex(x => x.id === id);
+      if (i > -1) { data[i].dispositivos = [...editTagsTemp]; }
+      salvarKey(KC, data);
+      fecharModalEditar();
+      renderCarrinhos();
+    }
+
     renderCarrinhos();
     renderFones();
   </script>
+
+  <!-- MODAL EDITAR NÚMEROS -->
+  <div class="modal-overlay hidden" id="modal-editar">
+    <div class="modal">
+      <h2>✏️ Alterar dispositivos</h2>
+      <input type="hidden" id="edit-reg-id" />
+      <div id="edit-grid-wrap">
+        <div class="num-counter" id="edit-counter" style="display:flex">
+          <span id="edit-counter-text">0 selecionados</span>
+          <span id="edit-counter-status"></span>
+        </div>
+        <div class="num-picker">
+          <div class="num-grid" id="edit-num-grid"></div>
+        </div>
+        <div class="tags" id="edit-tags" style="margin-top:8px"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="fecharModalEditar()">Cancelar</button>
+        <button class="btn-save" onclick="salvarEdicaoNums()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>
