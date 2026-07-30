@@ -19,14 +19,15 @@
   </header>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="trocarAba('carrinhos', this)">Carrinhos</button>
-    <button class="tab-btn" onclick="trocarAba('fones', this)">Fones</button>
+    <button class="tab-btn active" onclick="trocarAba('carrinhos', this)">🖥️ Carrinhos</button>
+    <button class="tab-btn" onclick="trocarAba('fones', this)">🎧 Fones</button>
+    <button class="tab-btn" onclick="trocarAba('agendamentos', this)">📅 Agendamentos</button>
   </div>
 
   <!-- ABA CARRINHOS -->
   <div id="aba-carrinhos" class="tab-panel active">
     <div class="container">
-      <div class="resumo">
+      <div class="resumo resumo-4">
         <div class="stat">
           <div class="stat-n" id="s-total">0</div>
           <div class="stat-l">registros hoje</div>
@@ -37,6 +38,10 @@
         </div>
         <div class="stat">
           <div class="stat-n" id="s-nb">0</div>
+          <div class="stat-l">carrinhos fora</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" id="s-disp">0</div>
           <div class="stat-l">dispositivos fora</div>
         </div>
       </div>
@@ -95,7 +100,8 @@
             </div>
           </div>
         </div>
-        <div class="field" style="margin-top:12px" id="disp-section">
+
+        <div id="disp-section" class="field" style="margin-top:12px">
           <label id="disp-label">Números dos dispositivos (opcional)</label>
           <div class="num-counter" id="num-counter" style="display:none">
             <span id="counter-text">0 selecionados</span>
@@ -106,6 +112,7 @@
           </div>
           <div class="tags" id="disp-tags" style="margin-top:8px"></div>
         </div>
+
         <div class="form-btn-row">
           <button class="primary" onclick="registrar()">+ Registrar saída</button>
         </div>
@@ -136,7 +143,7 @@
 
       <div class="form-card">
         <div class="form-card-title">Registrar saída de fones</div>
-        <div class="form-fones-grid">
+        <div class="form-row">
           <div class="field">
             <label for="f-professor">Professor(a) | Aluno(a)</label>
             <input id="f-professor" placeholder="Nome Professor/Aluno" />
@@ -168,6 +175,13 @@
             </select>
           </div>
           <div class="field">
+            <label for="f-tipo">Tipo de saída</label>
+            <select id="f-tipo" onchange="toggleFoneTipo()">
+              <option value="parcial">Alguns fones</option>
+              <option value="caixa">Caixa completa (31)</option>
+            </select>
+          </div>
+          <div class="field" id="f-qtd-wrap">
             <label for="f-qtd">Quantidade de fones</label>
             <input id="f-qtd" type="number" min="1" max="60" placeholder="Ex: 15" />
           </div>
@@ -182,45 +196,222 @@
     </div>
   </div>
 
-  <script>
 
+  <!-- ABA AGENDAMENTOS -->
+  <div id="aba-agendamentos" class="tab-panel">
+    <div class="container">
+      <div class="resumo">
+        <div class="stat">
+          <div class="stat-n" id="ag-total">0</div>
+          <div class="stat-l">agendamentos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" id="ag-hoje">0</div>
+          <div class="stat-l">hoje</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n" id="ag-prox">—</div>
+          <div class="stat-l">próximo</div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">📅 Novo agendamento</div>
+        <div class="form-row">
+          <div class="field">
+            <label for="ag-carrinho">Carrinho</label>
+            <select id="ag-carrinho">
+              <option value="">Selecionar...</option>
+              <option>Carrinho 1 | Notebooks</option>
+              <option>Carrinho 2 | Notebooks</option>
+              <option>Carrinho 3 | ChromeBooks</option>
+              <option>Carrinho 4 | Tablets</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ag-professor">Professor(a)</label>
+            <input id="ag-professor" placeholder="Nome do professor" />
+          </div>
+          <div class="field field-sm">
+            <label for="ag-turma">Turma</label>
+            <select id="ag-turma">
+              <option value="">Selecionar...</option>
+              <optgroup label="── Ensino Médio ──">
+                <option>1º A</option>
+                <option>1º B</option>
+                <option>2º A</option>
+                <option>2º B</option>
+                <option>3º A</option>
+                <option>3º B</option>
+              </optgroup>
+              <optgroup label="── Anos Finais ──">
+                <option>6º A</option>
+                <option>6º B</option>
+                <option>6º C</option>
+                <option>7º A</option>
+                <option>7º B</option>
+                <option>8º A</option>
+                <option>8º B</option>
+                <option>9º A</option>
+                <option>9º B</option>
+                <option>9º C</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <div class="form-row" style="margin-top:10px">
+          <div class="field field-sm">
+            <label for="ag-data">Data</label>
+            <input type="date" id="ag-data" />
+          </div>
+          <div class="field field-sm">
+            <label for="ag-inicio">Horário início</label>
+            <input type="time" id="ag-inicio" />
+          </div>
+          <div class="field field-sm">
+            <label for="ag-fim">Horário fim</label>
+            <input type="time" id="ag-fim" />
+          </div>
+          <div class="field">
+            <label for="ag-obs">Observação (opcional)</label>
+            <input id="ag-obs" placeholder="Ex: Aula de informática..." />
+          </div>
+        </div>
+        <div class="form-btn-row">
+          <button class="primary" onclick="registrarAgendamento()">+ Agendar</button>
+        </div>
+      </div>
+
+      <!-- Visão semanal -->
+      <div class="semana-nav">
+        <button class="mes-btn" onclick="mudarSemana(-1)">‹ Semana anterior</button>
+        <span id="semana-label" class="semana-label"></span>
+        <button class="mes-btn" onclick="mudarSemana(1)">Próxima semana ›</button>
+      </div>
+
+      <div id="ag-lista"></div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR REGISTRO -->
+  <div class="modal-overlay hidden" id="modal-editar">
+    <div class="modal">
+      <h2>✏️ Editar registro</h2>
+      <input type="hidden" id="edit-reg-id" />
+      <input type="hidden" id="edit-reg-tipo" />
+
+      <div class="modal-field">
+        <label>Professor(a) | Aluno(a)</label>
+        <input id="edit-prof" placeholder="Nome Professor/Aluno" />
+      </div>
+      <div class="modal-field">
+        <label>Turma</label>
+        <select id="edit-turma">
+          <option value="">Selecionar...</option>
+          <optgroup label="── Ensino Médio ──">
+            <option>1º A</option>
+            <option>1º B</option>
+            <option>2º A</option>
+            <option>2º B</option>
+            <option>3º A</option>
+            <option>3º B</option>
+          </optgroup>
+          <optgroup label="── Anos Finais ──">
+            <option>6º A</option>
+            <option>6º B</option>
+            <option>6º C</option>
+            <option>7º A</option>
+            <option>7º B</option>
+            <option>8º A</option>
+            <option>8º B</option>
+            <option>9º A</option>
+            <option>9º B</option>
+            <option>9º C</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div id="edit-grid-wrap">
+        <div class="num-counter" id="edit-counter" style="display:flex">
+          <span id="edit-counter-text">0 selecionados</span>
+          <span id="edit-counter-status"></span>
+        </div>
+        <div class="num-picker">
+          <div class="num-grid" id="edit-num-grid"></div>
+        </div>
+        <div class="tags" id="edit-tags" style="margin-top:8px"></div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-save" onclick="salvarEdicao()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR FONE -->
+  <div class="modal-overlay hidden" id="modal-editar-fone">
+    <div class="modal">
+      <h2>✏️ Editar registro de fones</h2>
+      <input type="hidden" id="fedit-id" />
+      <div class="modal-field">
+        <label>Professor(a) | Aluno(a)</label>
+        <input id="fedit-prof" placeholder="Nome Professor/Aluno" />
+      </div>
+      <div class="modal-field">
+        <label>Turma</label>
+        <select id="fedit-turma">
+          <option value="">Selecionar...</option>
+          <optgroup label="── Ensino Médio ──">
+            <option>1º A</option>
+            <option>1º B</option>
+            <option>2º A</option>
+            <option>2º B</option>
+            <option>3º A</option>
+            <option>3º B</option>
+          </optgroup>
+          <optgroup label="── Anos Finais ──">
+            <option>6º A</option>
+            <option>6º B</option>
+            <option>6º C</option>
+            <option>7º A</option>
+            <option>7º B</option>
+            <option>8º A</option>
+            <option>8º B</option>
+            <option>9º A</option>
+            <option>9º B</option>
+            <option>9º C</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="fecharModalFone()">Cancelar</button>
+        <button class="btn-save" onclick="salvarEdicaoFone()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
     const ANOS = [
       { label: 'Ensino Médio', prefixos: ['1º', '2º', '3º'] },
       { label: 'Anos Finais', prefixos: ['6º', '7º', '8º', '9º'] },
     ];
+    const CARRINHOS_NOMES = ['Carrinho 1 | Notebooks', 'Carrinho 2 | Notebooks', 'Carrinho 3 | ChromeBooks', 'Carrinho 4 | Tablets'];
 
-    function anoDeturma(turma) {
-
-      return turma.split(' ')[0];
-    }
-
-    function grupoDeAno(ano) {
-      for (const g of ANOS) {
-        if (g.prefixos.includes(ano)) return g.label;
-      }
-      return 'Outros';
-    }
-
+    function anoDeturma(t) { return t.split(' ')[0]; }
+    function grupoDeAno(a) { for (const g of ANOS) { if (g.prefixos.includes(a)) return g.label; } return 'Outros'; }
     function hoje() { return new Date().toDateString(); }
     function horaAgora() { return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }
     function dataStr() {
       const s = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
       return s.charAt(0).toUpperCase() + s.slice(1);
     }
-
     function carregarKey(key) {
       const dk = key + '_date';
-      if (localStorage.getItem(dk) !== hoje()) {
-        localStorage.removeItem(key);
-        localStorage.setItem(dk, hoje());
-      }
+      if (localStorage.getItem(dk) !== hoje()) { localStorage.removeItem(key); localStorage.setItem(dk, hoje()); }
       return JSON.parse(localStorage.getItem(key) || '[]');
     }
-
-    function salvarKey(key, data) {
-      localStorage.setItem(key, JSON.stringify(data));
-      localStorage.setItem(key + '_date', hoje());
-    }
+    function salvarKey(key, data) { localStorage.setItem(key, JSON.stringify(data)); localStorage.setItem(key + '_date', hoje()); }
 
     function trocarAba(aba, btn) {
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -230,7 +421,7 @@
     }
 
     /* ── CARRINHOS ── */
-    const KC = 'carrinhos_v5';
+    const KC = 'carrinhos_v6';
     let tagsC = [];
 
     function prefixoCarrinho(c) {
@@ -240,9 +431,25 @@
       return 'NB';
     }
 
-    function getLimite() {
+    function toggleQtd() {
       const tipo = document.getElementById('tipo-qtd').value;
-      if (tipo === 'total') return 50;
+      const qtdInput = document.getElementById('qtd');
+      const dispSection = document.getElementById('disp-section');
+      if (tipo === 'total') {
+        qtdInput.value = ''; qtdInput.placeholder = 'Todo'; qtdInput.disabled = true; qtdInput.style.opacity = '0.4';
+
+        dispSection.style.opacity = '0.35';
+        dispSection.style.pointerEvents = 'none';
+        tagsC = []; renderTags(); atualizarGrid();
+      } else {
+        qtdInput.disabled = false; qtdInput.style.opacity = '1'; qtdInput.placeholder = 'Qtd'; qtdInput.value = '';
+        dispSection.style.opacity = '1';
+        dispSection.style.pointerEvents = 'auto';
+        atualizarGrid();
+      }
+    }
+
+    function getLimite() {
       return parseInt(document.getElementById('qtd').value) || 0;
     }
 
@@ -264,34 +471,28 @@
         counterText.textContent = `${sel} de ${limite} selecionados`;
         if (sel === 0) { counterStatus.textContent = ''; counterStatus.className = ''; }
         else if (sel < limite) { counterStatus.textContent = `faltam ${limite - sel}`; counterStatus.className = 'counter-warn'; }
-        else if (sel === limite) { counterStatus.textContent = '✓ completo'; counterStatus.className = 'counter-ok'; }
+        else { counterStatus.textContent = '✓ completo'; counterStatus.className = 'counter-ok'; }
       } else {
         counter.style.display = sel > 0 ? 'flex' : 'none';
         counterText.textContent = `${sel} selecionado${sel !== 1 ? 's' : ''}`;
         counterStatus.textContent = '';
       }
 
-      const grid = document.getElementById('num-grid');
-      grid.innerHTML = Array.from({ length: 50 }, (_, i) => {
+      document.getElementById('num-grid').innerHTML = Array.from({ length: 50 }, (_, i) => {
         const n = String(i + 1).padStart(2, '0');
         const label = `${prefixo}-${n}`;
         const isSel = tagsC.includes(label);
         const bloqueado = !isSel && limite > 0 && sel >= limite;
         return `<button type="button" class="num-btn${isSel ? ' selected' : ''}${bloqueado ? ' bloqueado' : ''}"
-          onclick="toggleNum('${label}')" ${bloqueado ? 'disabled' : ''}>${n}</button>`;
+        onclick="toggleNum('${label}')" ${bloqueado ? 'disabled' : ''}>${n}</button>`;
       }).join('');
     }
 
     function toggleNum(label) {
       const i = tagsC.indexOf(label);
-      if (i > -1) tagsC.splice(i, 1);
-      else tagsC.push(label);
-      tagsC.sort((a, b) => {
-        const na = parseInt(a.split('-')[1]); const nb = parseInt(b.split('-')[1]);
-        return na - nb;
-      });
-      renderTags();
-      atualizarGrid();
+      if (i > -1) tagsC.splice(i, 1); else tagsC.push(label);
+      tagsC.sort((a, b) => parseInt(a.split('-')[1]) - parseInt(b.split('-')[1]));
+      renderTags(); atualizarGrid();
     }
 
     function renderTags() {
@@ -302,35 +503,26 @@
 
     function removeTagC(i) { tagsC.splice(i, 1); renderTags(); atualizarGrid(); }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('carrinho').addEventListener('change', () => {
-        tagsC = []; renderTags(); atualizarGrid();
-      });
-      document.getElementById('qtd').addEventListener('input', atualizarGrid);
-      document.getElementById('tipo-qtd').addEventListener('change', atualizarGrid);
-      atualizarGrid();
-    });
-
-    function toggleQtd() {
-      const tipo = document.getElementById('tipo-qtd').value;
-      const qtdInput = document.getElementById('qtd');
-      if (tipo === 'total') {
-        qtdInput.value = ''; qtdInput.placeholder = 'Todo'; qtdInput.disabled = true; qtdInput.style.opacity = '0.4';
-      } else {
-        qtdInput.disabled = false; qtdInput.style.opacity = '1'; qtdInput.placeholder = 'Qtd'; qtdInput.value = '';
-      }
-    }
-
     function registrar() {
       const c = document.getElementById('carrinho').value;
       const p = document.getElementById('professor').value.trim();
       const turma = document.getElementById('turma').value;
       const tipo = document.getElementById('tipo-qtd').value;
       const qtdRaw = parseInt(document.getElementById('qtd').value) || 0;
-      if (!c || !p || !turma) { alert('Preenche carrinho, professor e turma!'); return; }
+      if (!c || !p || !turma) { alert('Preenche carrinho, professor/aluno e turma!'); return; }
       if (tipo === 'parcial' && !qtdRaw) { alert('Informe a quantidade!'); return; }
+      if (tipo === 'parcial' && qtdRaw > 0 && tagsC.length !== qtdRaw) {
+        const diff = qtdRaw - tagsC.length;
+        if (tagsC.length === 0) alert(`Selecione os ${qtdRaw} número${qtdRaw > 1 ? 's' : ''} antes de registrar.`);
+        else if (diff > 0) alert(`Faltam ${diff} número${diff > 1 ? 's' : ''}. Selecionou ${tagsC.length} de ${qtdRaw}.`);
+        else alert(`Selecionou ${tagsC.length} mas informou apenas ${qtdRaw}. Corrija.`);
+        return;
+      }
 
       const data = carregarKey(KC);
+      const emUso = data.find(r => !r.devolvido && r.carrinho === c);
+      if (emUso) { alert(`⚠️ ${c} já está fora! Aguarde a devolução antes de registrar novamente.`); return; }
+
       data.push({
         id: Date.now(), carrinho: c, professor: p, turma,
         qtd: tipo === 'total' ? 999 : qtdRaw,
@@ -339,6 +531,7 @@
         hora: horaAgora(), devolvido: false
       });
       salvarKey(KC, data);
+
       document.getElementById('professor').value = '';
       document.getElementById('qtd').value = '';
       document.getElementById('qtd').disabled = false;
@@ -347,6 +540,7 @@
       document.getElementById('carrinho').value = '';
       document.getElementById('turma').value = '';
       document.getElementById('tipo-qtd').value = 'parcial';
+      document.getElementById('disp-section').style.display = 'block';
       tagsC = []; renderTags(); atualizarGrid();
       renderCarrinhos();
     }
@@ -358,13 +552,16 @@
       salvarKey(KC, data); renderCarrinhos();
     }
 
-    function deletarC(id) {
-      salvarKey(KC, carregarKey(KC).filter(x => x.id !== id));
-      renderCarrinhos();
+    function desfazerDevolucaoC(id) {
+      const data = carregarKey(KC);
+      const i = data.findIndex(x => x.id === id);
+      if (i > -1) { data[i].devolvido = false; delete data[i].horaVolta; }
+      salvarKey(KC, data); renderCarrinhos();
     }
 
-    function buildGrupos(data) {
+    function deletarC(id) { salvarKey(KC, carregarKey(KC).filter(x => x.id !== id)); renderCarrinhos(); }
 
+    function buildGrupos(data) {
       const porAno = {};
       data.forEach(r => {
         const ano = anoDeturma(r.turma);
@@ -375,155 +572,105 @@
       return porAno;
     }
 
-    function renderCard(r, devolverFn, deletarFn) {
-      const qtdTexto = r.total ? 'Carrinho completo' : `${r.qtdLabel} disp.`;
+    function renderCard(r, devolverFn, desfazerFn, deletarFn) {
       const disps = (r.dispositivos && r.dispositivos.length)
-        ? `<div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">${r.dispositivos.map(d => `<span class="tag" style="font-size:11px;padding:2px 7px">${d}</span>`).join('')}</div>`
-        : '';
+        ? `<div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px">${r.dispositivos.map(d => `<span class="tag" style="font-size:11px;padding:2px 7px">${d}</span>`).join('')}</div>` : '';
+      const editBtn = `<button class="btn-edit" onclick="abrirModal(${r.id})" title="Editar">✏️</button>`;
       return `
-      <div class="card${r.devolvido ? ' devolvido' : ''}">
-        <div class="card-info">
-          <div class="card-title">${r.carrinho ? r.carrinho + ' — ' : ''}${r.total ? 'Carrinho completo' : (r.qtd + ' disp.')}</div>
-          <div class="card-sub">Professor/Aluno: ${r.professor} · <strong>${r.turma}</strong></div>
-          ${disps}
-          <div class="card-hora">Saída ${r.hora}${r.horaVolta ? ' · Devolvido ' + r.horaVolta : ''}</div>
-        </div>
-        <div class="card-actions">
-          <span class="badge ${r.devolvido ? 'badge-in' : 'badge-out'}">${r.devolvido ? 'Devolvido' : 'Em uso'}</span>
-          ${!r.devolvido ? `<button class="btn-dev" onclick="${devolverFn}(${r.id})">✓ Devolvido</button>` : ''}
-          <button class="btn-edit" onclick="abrirModalEditar(${r.id})" title="Editar números">✏️</button>
-          <button class="btn-del" onclick="${deletarFn}(${r.id})">✕</button>
-        </div>
-      </div>`;
+    <div class="card${r.devolvido ? ' devolvido' : ''}">
+      <div class="card-info">
+        <div class="card-title">${r.carrinho ? r.carrinho + ' — ' : ''}${r.total ? 'Carrinho completo' : r.qtd + ' disp.'}</div>
+        <div class="card-sub">Professor/Aluno: ${r.professor} · <strong>${r.turma}</strong></div>
+        ${disps}
+        <div class="card-hora">Saída ${r.hora}${r.horaVolta ? ' · Devolvido ' + r.horaVolta : ''}</div>
+      </div>
+      <div class="card-actions">
+        <span class="badge ${r.devolvido ? 'badge-in' : 'badge-out'}">${r.devolvido ? '✓ Devolvido' : 'Em uso'}</span>
+        ${!r.devolvido
+          ? `<button class="btn-dev" onclick="${devolverFn}(${r.id})">✓ Devolvido</button>${editBtn}`
+          : `<button class="btn-desfazer" onclick="${desfazerFn}(${r.id})">↩ Desfazer</button>`}
+        <button class="btn-del" onclick="${deletarFn}(${r.id})">✕</button>
+      </div>
+    </div>`;
     }
 
-    function renderGrupos(data, devolverFn, deletarFn) {
+    function renderGrupos(data, devolverFn, desfazerFn, deletarFn) {
       if (!data.length) return null;
-
       const porAno = buildGrupos(data);
-
       const ordemAnos = ['1º', '2º', '3º', '6º', '7º', '8º', '9º'];
-      const anosPresentes = Object.keys(porAno).sort((a, b) =>
-        ordemAnos.indexOf(a) - ordemAnos.indexOf(b)
-      );
-
-      return anosPresentes.map(ano => {
-        const turmasDoAno = porAno[ano];
-        const turmasOrdenadas = Object.keys(turmasDoAno).sort();
-        const grupo = grupoDeAno(ano);
-
-        const emUsoAno = Object.values(turmasDoAno).flat().filter(r => !r.devolvido).length;
-
-        const turmasHTML = turmasOrdenadas.map(turma => {
-          const registros = turmasDoAno[turma];
-          const emUso = registros.filter(r => !r.devolvido).length;
-
-          return `
-          <div class="subgrupo">
-            <div class="subgrupo-header">
-              <span class="subgrupo-turma">${turma}</span>
-              <span class="subgrupo-badge ${emUso > 0 ? 'badge-ativo' : 'badge-ok'}">
-                ${emUso > 0 ? emUso + ' em uso' : '✓ devolvido'}
-              </span>
-            </div>
-            ${registros.map(r => renderCard(r, devolverFn, deletarFn)).join('')}
-          </div>`;
-        }).join('');
-
-        return `
-        <div class="grupo">
-          <div class="grupo-header">
-            <div>
-              <span class="grupo-ano">${ano} Ano</span>
-              <span class="grupo-label">${grupo}</span>
-            </div>
-            <span class="grupo-count">${emUsoAno > 0 ? emUsoAno + ' em uso' : 'tudo devolvido'}</span>
+      const anos = Object.keys(porAno).sort((a, b) => ordemAnos.indexOf(a) - ordemAnos.indexOf(b));
+      return anos.map(ano => {
+        const turmas = porAno[ano];
+        const emUsoAno = Object.values(turmas).flat().filter(r => !r.devolvido).length;
+        const turmasHTML = Object.keys(turmas).sort().map(turma => {
+          const regs = turmas[turma];
+          const emUso = regs.filter(r => !r.devolvido).length;
+          return `<div class="subgrupo">
+          <div class="subgrupo-header">
+            <span class="subgrupo-turma">${turma}</span>
+            <span class="subgrupo-badge ${emUso > 0 ? 'badge-ativo' : 'badge-ok'}">${emUso > 0 ? emUso + ' em uso' : '✓ devolvido'}</span>
           </div>
-          <div class="grupo-body">${turmasHTML}</div>
+          ${regs.map(r => renderCard(r, devolverFn, desfazerFn, deletarFn)).join('')}
         </div>`;
+        }).join('');
+        return `<div class="grupo">
+        <div class="grupo-header">
+          <div><span class="grupo-ano">${ano} Ano</span><span class="grupo-label">${grupoDeAno(ano)}</span></div>
+          <span class="grupo-count">${emUsoAno > 0 ? emUsoAno + ' em uso' : 'tudo devolvido'}</span>
+        </div>
+        <div class="grupo-body">${turmasHTML}</div>
+      </div>`;
       }).join('');
     }
 
     function renderCarrinhos() {
       const data = carregarKey(KC);
       document.getElementById('data-hoje').textContent = dataStr();
-      const lista = document.getElementById('lista');
-
       const out = data.filter(x => !x.devolvido);
       document.getElementById('s-total').textContent = data.length;
       document.getElementById('s-out').textContent = out.length;
-      const nb = out.reduce((a, x) => x.total ? a : a + x.qtd, 0);
-      document.getElementById('s-nb').textContent = out.some(x => x.total) ? nb + '+' : nb;
-
-      const html = renderGrupos(data, 'devolverC', 'deletarC');
-      lista.innerHTML = html || '<div class="empty">📦 Nenhum registro ainda hoje.</div>';
+      const carrinhosForaSet = new Set(out.filter(x => x.total).map(x => x.carrinho));
+      document.getElementById('s-nb').textContent = carrinhosForaSet.size;
+      const dispSoltos = out.filter(x => !x.total).reduce((a, x) => a + x.qtd, 0);
+      document.getElementById('s-disp').textContent = dispSoltos;
+      const html = renderGrupos(data, 'devolverC', 'desfazerDevolucaoC', 'deletarC');
+      document.getElementById('lista').innerHTML = html || '<div class="empty">📦 Nenhum registro ainda hoje.</div>';
     }
 
-    /* ── FONES ── */
-    const KF = 'fones_v3';
+    /* ── MODAL EDITAR ── */
+    let editTagsTemp = [], editLimite = 0, editPrefixo = '', editIsTotal = false;
 
-    function registrarFone() {
-      const p = document.getElementById('f-professor').value.trim();
-      const turma = document.getElementById('f-turma').value;
-      const q = parseInt(document.getElementById('f-qtd').value) || 0;
-      if (!p || !turma || !q) { alert('Preenche professor, turma e quantidade!'); return; }
-
-      const data = carregarKey(KF);
-      data.push({ id: Date.now(), professor: p, turma, qtd: q, hora: horaAgora(), devolvido: false });
-      salvarKey(KF, data);
-      document.getElementById('f-professor').value = '';
-      document.getElementById('f-qtd').value = '';
-      document.getElementById('f-turma').value = '';
-      renderFones();
-    }
-
-    function devolverF(id) {
-      const data = carregarKey(KF);
-      const i = data.findIndex(x => x.id === id);
-      if (i > -1) { data[i].devolvido = true; data[i].horaVolta = horaAgora(); }
-      salvarKey(KF, data); renderFones();
-    }
-
-    function deletarF(id) {
-      salvarKey(KF, carregarKey(KF).filter(x => x.id !== id));
-      renderFones();
-    }
-
-    function renderFones() {
-      const data = carregarKey(KF);
-      document.getElementById('f-data-hoje').textContent = dataStr();
-      const lista = document.getElementById('f-lista');
-
-      const out = data.filter(x => !x.devolvido);
-      document.getElementById('f-total').textContent = data.length;
-      document.getElementById('f-out').textContent = out.length;
-      document.getElementById('f-nb').textContent = out.reduce((a, x) => a + x.qtd, 0);
-
-      const dataAdaptada = data.map(r => ({ ...r, carrinho: null, total: false, qtdLabel: r.qtd }));
-      const html = renderGrupos(dataAdaptada, 'devolverF', 'deletarF');
-      lista.innerHTML = html || '<div class="empty">🎧 Nenhum fone registrado hoje.</div>';
-    }
-
-    /* ── MODAL EDITAR NÚMEROS ── */
-    let editTagsTemp = [];
-    let editLimite = 0;
-    let editPrefixo = '';
-
-    function abrirModalEditar(id) {
+    function abrirModal(id) {
       const data = carregarKey(KC);
       const r = data.find(x => x.id === id);
       if (!r) return;
       document.getElementById('edit-reg-id').value = id;
+      document.getElementById('edit-prof').value = r.professor;
+      document.getElementById('edit-turma').value = r.turma || '';
+      editIsTotal = r.total;
       editPrefixo = prefixoCarrinho(r.carrinho || '');
-      editLimite = r.total ? 50 : r.qtd;
+      editLimite = r.total ? 0 : r.qtd;
       editTagsTemp = [...(r.dispositivos || [])];
-      renderEditGrid();
+
+      const wrap = document.getElementById('edit-grid-wrap');
+      wrap.style.display = 'block';
+      wrap.style.opacity = r.total ? '0.35' : '1';
+      wrap.style.pointerEvents = r.total ? 'none' : 'auto';
+      if (!r.total) renderEditGrid();
+      else {
+
+        document.getElementById('edit-num-grid').innerHTML = Array.from({ length: 50 }, (_, i) => {
+          const n = String(i + 1).padStart(2, '0');
+          return `<button type="button" class="num-btn bloqueado" disabled>${n}</button>`;
+        }).join('');
+        document.getElementById('edit-counter-text').textContent = 'Carrinho completo — sem numeração';
+        document.getElementById('edit-counter-status').textContent = '';
+        document.getElementById('edit-tags').innerHTML = '';
+      }
       document.getElementById('modal-editar').classList.remove('hidden');
     }
 
-    function fecharModalEditar() {
-      document.getElementById('modal-editar').classList.add('hidden');
-    }
+    function fecharModal() { document.getElementById('modal-editar').classList.add('hidden'); }
 
     function toggleEditNum(label) {
       const i = editTagsTemp.indexOf(label);
@@ -535,67 +682,333 @@
 
     function renderEditGrid() {
       const sel = editTagsTemp.length;
-      const counterText = document.getElementById('edit-counter-text');
-      const counterStatus = document.getElementById('edit-counter-status');
-      counterText.textContent = `${sel} de ${editLimite} selecionados`;
-      if (sel === 0) { counterStatus.textContent = ''; counterStatus.className = ''; }
-      else if (sel < editLimite) { counterStatus.textContent = `faltam ${editLimite - sel}`; counterStatus.className = 'counter-warn'; }
-      else { counterStatus.textContent = '✓ completo'; counterStatus.className = 'counter-ok'; }
-
+      document.getElementById('edit-counter-text').textContent = `${sel} de ${editLimite} selecionados`;
+      const cs = document.getElementById('edit-counter-status');
+      if (sel === 0) { cs.textContent = ''; cs.className = ''; }
+      else if (sel < editLimite) { cs.textContent = `faltam ${editLimite - sel}`; cs.className = 'counter-warn'; }
+      else { cs.textContent = '✓ completo'; cs.className = 'counter-ok'; }
       document.getElementById('edit-num-grid').innerHTML = Array.from({ length: 50 }, (_, i) => {
         const n = String(i + 1).padStart(2, '0');
         const label = `${editPrefixo}-${n}`;
         const isSel = editTagsTemp.includes(label);
-        const bloqueado = !isSel && editTagsTemp.length >= editLimite;
-        return `<button type="button" class="num-btn${isSel ? ' selected' : ''}${bloqueado ? ' bloqueado' : ''}"
-          onclick="toggleEditNum('${label}')" ${bloqueado ? 'disabled' : ''}>${n}</button>`;
+        const bloq = !isSel && editTagsTemp.length >= editLimite;
+        return `<button type="button" class="num-btn${isSel ? ' selected' : ''}${bloq ? ' bloqueado' : ''}"
+        onclick="toggleEditNum('${label}')" ${bloq ? 'disabled' : ''}>${n}</button>`;
       }).join('');
-
-      document.getElementById('edit-tags').innerHTML = editTagsTemp.map(t =>
-        `<span class="tag" style="font-size:12px">${t}</span>`
-      ).join('');
+      document.getElementById('edit-tags').innerHTML = editTagsTemp.map(t => `<span class="tag" style="font-size:12px">${t}</span>`).join('');
     }
 
-    function salvarEdicaoNums() {
+    function salvarEdicao() {
       const id = parseInt(document.getElementById('edit-reg-id').value);
-      if (editTagsTemp.length !== editLimite) {
-        alert(`Selecione exatamente ${editLimite} dispositivo${editLimite > 1 ? 's' : ''} antes de salvar.`);
-        return;
+      const prof = document.getElementById('edit-prof').value.trim();
+      const turma = document.getElementById('edit-turma').value;
+      if (!prof) { alert('Informe o nome do professor/aluno.'); return; }
+      if (!turma) { alert('Selecione a turma.'); return; }
+      if (!editIsTotal && editTagsTemp.length !== editLimite) {
+        alert(`Selecione exatamente ${editLimite} dispositivo${editLimite > 1 ? 's' : ''}.`); return;
       }
       const data = carregarKey(KC);
       const i = data.findIndex(x => x.id === id);
-      if (i > -1) { data[i].dispositivos = [...editTagsTemp]; }
-      salvarKey(KC, data);
-      fecharModalEditar();
-      renderCarrinhos();
+      if (i > -1) {
+        data[i].professor = prof;
+        data[i].turma = turma;
+        if (!editIsTotal) data[i].dispositivos = [...editTagsTemp];
+      }
+      salvarKey(KC, data); fecharModal(); renderCarrinhos();
     }
+
+    /* ── FONES ── */
+    const KF = 'fones_v4';
+
+    function toggleFoneTipo() {
+      const tipo = document.getElementById('f-tipo').value;
+      const wrap = document.getElementById('f-qtd-wrap');
+      wrap.style.display = tipo === 'caixa' ? 'none' : 'block';
+      if (tipo === 'caixa') document.getElementById('f-qtd').value = '';
+    }
+
+    function registrarFone() {
+      const p = document.getElementById('f-professor').value.trim();
+      const turma = document.getElementById('f-turma').value;
+      const tipo = document.getElementById('f-tipo').value;
+      const q = tipo === 'caixa' ? 31 : (parseInt(document.getElementById('f-qtd').value) || 0);
+      if (!p || !turma) { alert('Preenche professor/aluno e turma!'); return; }
+      if (tipo === 'parcial' && !q) { alert('Informe a quantidade de fones!'); return; }
+      const data = carregarKey(KF);
+      data.push({ id: Date.now(), professor: p, turma, qtd: q, caixaCompleta: tipo === 'caixa', hora: horaAgora(), devolvido: false });
+      salvarKey(KF, data);
+      document.getElementById('f-professor').value = '';
+      document.getElementById('f-qtd').value = '';
+      document.getElementById('f-turma').value = '';
+      document.getElementById('f-tipo').value = 'parcial';
+      document.getElementById('f-qtd-wrap').style.display = 'block';
+      renderFones();
+    }
+
+    function devolverF(id) {
+      const data = carregarKey(KF);
+      const i = data.findIndex(x => x.id === id);
+      if (i > -1) { data[i].devolvido = true; data[i].horaVolta = horaAgora(); }
+      salvarKey(KF, data); renderFones();
+    }
+
+    function desfazerDevolucaoF(id) {
+      const data = carregarKey(KF);
+      const i = data.findIndex(x => x.id === id);
+      if (i > -1) { data[i].devolvido = false; delete data[i].horaVolta; }
+      salvarKey(KF, data); renderFones();
+    }
+
+    function deletarF(id) { salvarKey(KF, carregarKey(KF).filter(x => x.id !== id)); renderFones(); }
+
+    function abrirModalFone(id) {
+      const r = carregarKey(KF).find(x => x.id === id);
+      if (!r) return;
+      document.getElementById('fedit-id').value = id;
+      document.getElementById('fedit-prof').value = r.professor;
+      document.getElementById('fedit-turma').value = r.turma || '';
+      document.getElementById('modal-editar-fone').classList.remove('hidden');
+    }
+    function fecharModalFone() { document.getElementById('modal-editar-fone').classList.add('hidden'); }
+    function salvarEdicaoFone() {
+      const id = parseInt(document.getElementById('fedit-id').value);
+      const prof = document.getElementById('fedit-prof').value.trim();
+      const turma = document.getElementById('fedit-turma').value;
+      if (!prof) { alert('Informe o nome.'); return; }
+      if (!turma) { alert('Selecione a turma.'); return; }
+      const data = carregarKey(KF);
+      const i = data.findIndex(x => x.id === id);
+      if (i > -1) { data[i].professor = prof; data[i].turma = turma; }
+      salvarKey(KF, data); fecharModalFone(); renderFones();
+    }
+
+    function renderFoneCard(r) {
+      const label = r.caixaCompleta ? 'Caixa completa (31 fones)' : `${r.qtd} fone${r.qtd > 1 ? 's' : ''}`;
+      return `<div class="card${r.devolvido ? ' devolvido' : ''}">
+      <div class="card-info">
+        <div class="card-title">${label}</div>
+        <div class="card-sub">Professor/Aluno: ${r.professor} · <strong>${r.turma}</strong></div>
+        <div class="card-hora">Saída ${r.hora}${r.horaVolta ? ' · Devolvido ' + r.horaVolta : ''}</div>
+      </div>
+      <div class="card-actions">
+        <span class="badge ${r.devolvido ? 'badge-in' : 'badge-out'}">${r.devolvido ? '✓ Devolvido' : 'Em uso'}</span>
+        ${!r.devolvido
+          ? `<button class="btn-dev" onclick="devolverF(${r.id})">✓ Devolvido</button><button class="btn-edit" onclick="abrirModalFone(${r.id})" title="Editar">✏️</button>`
+          : `<button class="btn-desfazer" onclick="desfazerDevolucaoF(${r.id})">↩ Desfazer</button>`}
+        <button class="btn-del" onclick="deletarF(${r.id})">✕</button>
+      </div>
+    </div>`;
+    }
+
+    function renderFones() {
+      const data = carregarKey(KF);
+      document.getElementById('f-data-hoje').textContent = dataStr();
+      const out = data.filter(x => !x.devolvido);
+      document.getElementById('f-total').textContent = data.length;
+      document.getElementById('f-out').textContent = out.length;
+      document.getElementById('f-nb').textContent = out.reduce((a, x) => a + x.qtd, 0);
+
+      if (!data.length) { document.getElementById('f-lista').innerHTML = '<div class="empty">🎧 Nenhum fone registrado hoje.</div>'; return; }
+
+      const porAno = {};
+      data.forEach(r => {
+        const ano = anoDeturma(r.turma);
+        if (!porAno[ano]) porAno[ano] = {};
+        if (!porAno[ano][r.turma]) porAno[ano][r.turma] = [];
+        porAno[ano][r.turma].push(r);
+      });
+      const ordemAnos = ['1º', '2º', '3º', '6º', '7º', '8º', '9º'];
+      const anos = Object.keys(porAno).sort((a, b) => ordemAnos.indexOf(a) - ordemAnos.indexOf(b));
+      document.getElementById('f-lista').innerHTML = anos.map(ano => {
+        const turmas = porAno[ano];
+        const emUsoAno = Object.values(turmas).flat().filter(r => !r.devolvido).length;
+        const turmasHTML = Object.keys(turmas).sort().map(turma => {
+          const regs = turmas[turma];
+          const emUso = regs.filter(r => !r.devolvido).length;
+          return `<div class="subgrupo">
+          <div class="subgrupo-header">
+            <span class="subgrupo-turma">${turma}</span>
+            <span class="subgrupo-badge ${emUso > 0 ? 'badge-ativo' : 'badge-ok'}">${emUso > 0 ? emUso + ' em uso' : '✓ devolvido'}</span>
+          </div>
+          ${regs.map(r => renderFoneCard(r)).join('')}
+        </div>`;
+        }).join('');
+        return `<div class="grupo">
+        <div class="grupo-header">
+          <div><span class="grupo-ano">${ano} Ano</span><span class="grupo-label">${grupoDeAno(ano)}</span></div>
+          <span class="grupo-count">${emUsoAno > 0 ? emUsoAno + ' em uso' : 'tudo devolvido'}</span>
+        </div>
+        <div class="grupo-body">${turmasHTML}</div>
+      </div>`;
+      }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('carrinho').addEventListener('change', () => { tagsC = []; renderTags(); atualizarGrid(); });
+      document.getElementById('qtd').addEventListener('input', atualizarGrid);
+      document.getElementById('tipo-qtd').addEventListener('change', atualizarGrid);
+      atualizarGrid();
+    });
+
+
+    /* ── AGENDAMENTOS ── */
+    const KAG = 'agendamentos_v1';
+    let semanaOffset = 0;
+
+    function carregarAgendamentos() {
+      const dados = JSON.parse(localStorage.getItem(KAG) || '[]');
+      const limite = new Date();
+      limite.setDate(limite.getDate() - 5);
+      const filtrados = dados.filter(a => new Date(a.data) >= limite);
+      localStorage.setItem(KAG, JSON.stringify(filtrados));
+      return filtrados;
+    }
+
+    function salvarAgendamentos(dados) {
+      localStorage.setItem(KAG, JSON.stringify(dados));
+    }
+
+    function getSegundaFeira(offset) {
+      const hoje = new Date();
+      const dia = hoje.getDay();
+      const diff = dia === 0 ? -6 : 1 - dia;
+      const seg = new Date(hoje);
+      seg.setDate(hoje.getDate() + diff + (offset * 7));
+      seg.setHours(0, 0, 0, 0);
+      return seg;
+    }
+
+    function mudarSemana(delta) {
+      semanaOffset += delta;
+      renderAgendamentos();
+    }
+
+    function fmtData(d) {
+      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    }
+
+    function fmtDataISO(d) {
+      return d.toISOString().split('T')[0];
+    }
+
+    function registrarAgendamento() {
+      const carrinho = document.getElementById('ag-carrinho').value;
+      const professor = document.getElementById('ag-professor').value.trim();
+      const turma = document.getElementById('ag-turma').value;
+      const data = document.getElementById('ag-data').value;
+      const inicio = document.getElementById('ag-inicio').value;
+      const fim = document.getElementById('ag-fim').value;
+      const obs = document.getElementById('ag-obs').value.trim();
+
+      if (!carrinho || !professor || !turma || !data || !inicio || !fim) {
+        alert('Preenche todos os campos obrigatórios!'); return;
+      }
+      if (inicio >= fim) {
+        alert('O horário de início deve ser antes do horário de fim!'); return;
+      }
+
+      const dados = carregarAgendamentos();
+      const conflito = dados.find(a =>
+        a.carrinho === carrinho && a.data === data &&
+        !(fim <= a.inicio || inicio >= a.fim)
+      );
+      if (conflito) {
+        alert(`⚠️ Conflito! ${carrinho} já está agendado das ${conflito.inicio} às ${conflito.fim} para Prof. ${conflito.professor} - ${conflito.turma}`);
+        return;
+      }
+
+      dados.push({ id: Date.now(), carrinho, professor, turma, data, inicio, fim, obs });
+      salvarAgendamentos(dados);
+
+      document.getElementById('ag-carrinho').value = '';
+      document.getElementById('ag-professor').value = '';
+      document.getElementById('ag-turma').value = '';
+      document.getElementById('ag-data').value = '';
+      document.getElementById('ag-inicio').value = '';
+      document.getElementById('ag-fim').value = '';
+      document.getElementById('ag-obs').value = '';
+      renderAgendamentos();
+    }
+
+    function deletarAgendamento(id) {
+      const dados = carregarAgendamentos().filter(a => a.id !== id);
+      salvarAgendamentos(dados);
+      renderAgendamentos();
+    }
+
+    function renderAgendamentos() {
+      const dados = carregarAgendamentos();
+      const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+      const hojeISO = fmtDataISO(hoje);
+      const seg = getSegundaFeira(semanaOffset);
+
+      const agHoje = dados.filter(a => a.data === hojeISO);
+      document.getElementById('ag-total').textContent = dados.length;
+      document.getElementById('ag-hoje').textContent = agHoje.length;
+
+      // Próximo agendamento
+      const futuros = dados
+        .filter(a => a.data > hojeISO || (a.data === hojeISO && a.inicio > new Date().toTimeString().slice(0, 5)))
+        .sort((a, b) => a.data.localeCompare(b.data) || a.inicio.localeCompare(b.inicio));
+      document.getElementById('ag-prox').textContent = futuros.length > 0
+        ? futuros[0].inicio + ' · ' + futuros[0].carrinho.split(' ')[0] + ' ' + futuros[0].carrinho.split(' ')[1]
+        : '—';
+
+      // Label semana
+      const sex = new Date(seg); sex.setDate(seg.getDate() + 4);
+      document.getElementById('semana-label').textContent =
+        `${fmtData(seg)} a ${fmtData(sex)}`;
+
+      // Dias da semana
+      const DIAS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+      const lista = document.getElementById('ag-lista');
+
+      let html = '';
+      for (let d = 0; d < 5; d++) {
+        const dia = new Date(seg); dia.setDate(seg.getDate() + d);
+        const diaISO = fmtDataISO(dia);
+        const isHoje = diaISO === hojeISO;
+        const agsDia = dados.filter(a => a.data === diaISO).sort((a, b) => a.inicio.localeCompare(b.inicio));
+
+        html += `<div class="ag-dia${isHoje ? ' ag-dia-hoje' : ''}">
+        <div class="ag-dia-header">
+          <span class="ag-dia-nome">${DIAS[d]}</span>
+          <span class="ag-dia-data">${fmtData(dia)}${isHoje ? ' — Hoje' : ''}</span>
+          <span class="ag-dia-count">${agsDia.length > 0 ? agsDia.length + ' agendamento' + (agsDia.length > 1 ? 's' : '') : 'livre'}</span>
+        </div>`;
+
+        if (agsDia.length === 0) {
+          html += `<div class="ag-vazio">Nenhum agendamento</div>`;
+        } else {
+          agsDia.forEach(a => {
+            const passado = diaISO < hojeISO;
+            html += `<div class="ag-card${passado ? ' ag-passado' : ''}">
+            <div class="ag-horario">${a.inicio} – ${a.fim}</div>
+            <div class="ag-info">
+              <div class="ag-titulo">${a.carrinho}</div>
+              <div class="ag-sub">Prof. ${a.professor} · ${a.turma}</div>
+              ${a.obs ? `<div class="ag-obs">${a.obs}</div>` : ''}
+            </div>
+            <button class="btn-del" onclick="deletarAgendamento(${a.id})" title="Cancelar agendamento">✕</button>
+          </div>`;
+          });
+        }
+
+        html += `</div>`;
+      }
+
+      lista.innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const hoje = new Date().toISOString().split('T')[0];
+      document.getElementById('ag-data').value = hoje;
+      renderAgendamentos();
+    });
 
     renderCarrinhos();
     renderFones();
   </script>
-
-  <!-- MODAL EDITAR NÚMEROS -->
-  <div class="modal-overlay hidden" id="modal-editar">
-    <div class="modal">
-      <h2>✏️ Alterar dispositivos</h2>
-      <input type="hidden" id="edit-reg-id" />
-      <div id="edit-grid-wrap">
-        <div class="num-counter" id="edit-counter" style="display:flex">
-          <span id="edit-counter-text">0 selecionados</span>
-          <span id="edit-counter-status"></span>
-        </div>
-        <div class="num-picker">
-          <div class="num-grid" id="edit-num-grid"></div>
-        </div>
-        <div class="tags" id="edit-tags" style="margin-top:8px"></div>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-cancel" onclick="fecharModalEditar()">Cancelar</button>
-        <button class="btn-save" onclick="salvarEdicaoNums()">Salvar</button>
-      </div>
-    </div>
-  </div>
-
 </body>
 
 </html>
