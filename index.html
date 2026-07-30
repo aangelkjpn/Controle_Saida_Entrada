@@ -101,6 +101,7 @@
           </div>
         </div>
 
+
         <div id="disp-section" class="field" style="margin-top:12px">
           <label id="disp-label">Números dos dispositivos (opcional)</label>
           <div class="num-counter" id="num-counter" style="display:none">
@@ -304,6 +305,11 @@
         <label>Professor(a) | Aluno(a)</label>
         <input id="edit-prof" placeholder="Nome Professor/Aluno" />
       </div>
+      <div class="modal-field" id="edit-qtd-wrap">
+        <label>Quantidade de dispositivos</label>
+        <input type="number" id="edit-qtd" min="1" max="40" placeholder="Qtd"
+          oninput="editLimite=parseInt(this.value)||editLimite;renderEditGrid();" />
+      </div>
       <div class="modal-field">
         <label>Turma</label>
         <select id="edit-turma">
@@ -330,6 +336,7 @@
           </optgroup>
         </select>
       </div>
+
 
       <div id="edit-grid-wrap">
         <div class="num-counter" id="edit-counter" style="display:flex">
@@ -519,9 +526,21 @@
         return;
       }
 
+
       const data = carregarKey(KC);
-      const emUso = data.find(r => !r.devolvido && r.carrinho === c);
-      if (emUso) { alert(`⚠️ ${c} já está fora! Aguarde a devolução antes de registrar novamente.`); return; }
+      const carrinhoCompletoFora = data.find(r => !r.devolvido && r.carrinho === c && r.total);
+      if (carrinhoCompletoFora) {
+        alert(`⚠️ ${c} está fora por completo com Prof. ${carrinhoCompletoFora.professor} (${carrinhoCompletoFora.turma}). Aguarde a devolução.`);
+        return;
+      }
+
+      if (tipo === 'total') {
+        const parcialFora = data.find(r => !r.devolvido && r.carrinho === c && !r.total);
+        if (parcialFora) {
+          alert(`⚠️ Parte do ${c} já está fora com Prof. ${parcialFora.professor} (${parcialFora.turma}). Devolva os dispositivos antes de registrar o carrinho completo.`);
+          return;
+        }
+      }
 
       data.push({
         id: Date.now(), carrinho: c, professor: p, turma,
@@ -647,6 +666,8 @@
       document.getElementById('edit-reg-id').value = id;
       document.getElementById('edit-prof').value = r.professor;
       document.getElementById('edit-turma').value = r.turma || '';
+      document.getElementById('edit-qtd').value = r.total ? '' : r.qtd;
+      document.getElementById('edit-qtd-wrap').style.display = r.total ? 'none' : 'block';
       editIsTotal = r.total;
       editPrefixo = prefixoCarrinho(r.carrinho || '');
       editLimite = r.total ? 0 : r.qtd;
@@ -707,12 +728,19 @@
       if (!editIsTotal && editTagsTemp.length !== editLimite) {
         alert(`Selecione exatamente ${editLimite} dispositivo${editLimite > 1 ? 's' : ''}.`); return;
       }
+      const novaQtd = parseInt(document.getElementById('edit-qtd').value) || 0;
+      if (!editIsTotal && novaQtd > 0 && editTagsTemp.length > 0 && editTagsTemp.length !== novaQtd) {
+        alert(`Quantidade (${novaQtd}) diferente dos dispositivos selecionados (${editTagsTemp.length}). Corrija antes de salvar.`); return;
+      }
       const data = carregarKey(KC);
       const i = data.findIndex(x => x.id === id);
       if (i > -1) {
         data[i].professor = prof;
         data[i].turma = turma;
-        if (!editIsTotal) data[i].dispositivos = [...editTagsTemp];
+        if (!editIsTotal) {
+          if (novaQtd > 0) { data[i].qtd = novaQtd; data[i].qtdLabel = novaQtd; }
+          data[i].dispositivos = [...editTagsTemp];
+        }
       }
       salvarKey(KC, data); fecharModal(); renderCarrinhos();
     }
@@ -856,6 +884,7 @@
     let semanaOffset = 0;
 
     function carregarAgendamentos() {
+
       const dados = JSON.parse(localStorage.getItem(KAG) || '[]');
       const limite = new Date();
       limite.setDate(limite.getDate() - 5);
@@ -942,6 +971,7 @@
       const hojeISO = fmtDataISO(hoje);
       const seg = getSegundaFeira(semanaOffset);
 
+      // Stats
       const agHoje = dados.filter(a => a.data === hojeISO);
       document.getElementById('ag-total').textContent = dados.length;
       document.getElementById('ag-hoje').textContent = agHoje.length;
