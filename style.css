@@ -876,3 +876,258 @@ button.primary:active {
 .btn-save:hover {
   opacity: 0.88;
 }
+
+.btn-desfazer {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: var(--radius);
+  border: 0.5px solid var(--border-strong);
+  background: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: background 0.12s, color 0.12s;
+}
+
+.btn-desfazer:hover {
+  background: var(--bg-warning);
+  color: var(--text-warning);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal {
+  background: var(--surface-2);
+  border-radius: 16px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 580px;
+  border: 0.5px solid var(--border-strong);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.modal-field label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.btn-cancel {
+  height: 42px;
+  padding: 0 20px;
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text-secondary);
+  font-size: 15px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-cancel:hover {
+  background: var(--surface-1);
+}
+
+.btn-save {
+  height: 42px;
+  padding: 0 24px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-save:hover {
+  opacity: 0.88;
+}
+
+.btn-edit {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px 7px;
+  border-radius: var(--radius);
+  transition: background 0.12s;
+}
+
+.btn-edit:hover {
+  background: var(--accent-light);
+}
+
+.resumo-4 {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+.semana-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 12px;
+}
+
+.semana-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.mes-btn {
+  background: var(--surface-2);
+  border: 0.5px solid var(--border-strong);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.12s;
+  font-family: inherit;
+}
+
+.mes-btn:hover {
+  background: var(--surface-1);
+}
+
+.ag-dia {
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.ag-dia-hoje {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.ag-dia-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--surface-1);
+  border-bottom: 0.5px solid var(--border);
+}
+
+.ag-dia-nome {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ag-dia-data {
+  font-size: 13px;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.ag-dia-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--surface-2);
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border);
+}
+
+.ag-dia-hoje .ag-dia-nome {
+  color: var(--accent);
+}
+
+.ag-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.ag-card:last-child {
+  border-bottom: none;
+}
+
+.ag-passado {
+  opacity: 0.5;
+}
+
+.ag-horario {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 90px;
+  white-space: nowrap;
+}
+
+.ag-info {
+  flex: 1;
+}
+
+.ag-titulo {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ag-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.ag-obs {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  font-style: italic;
+}
+
+.ag-vazio {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.field-sm {
+  flex: 0 0 160px !important;
+  min-width: 0 !important;
+}
