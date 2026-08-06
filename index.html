@@ -53,10 +53,15 @@
             <label for="carrinho">Carrinho</label>
             <select id="carrinho">
               <option value="">Selecionar...</option>
-              <option>Carrinho 1 | Notebooks</option>
-              <option>Carrinho 2 | Notebooks</option>
-              <option>Carrinho 3 | ChromeBooks</option>
-              <option>Carrinho 4 | Tablets</option>
+              <optgroup label="── Carrinhos ──">
+                <option>Carrinho 1 | Notebooks</option>
+                <option>Carrinho 2 | Notebooks</option>
+                <option>Carrinho 3 | ChromeBooks</option>
+                <option>Carrinho 4 | Tablets</option>
+              </optgroup>
+              <optgroup label="── Laboratório ──">
+                <option>Informática</option>
+              </optgroup>
             </select>
           </div>
           <div class="field">
@@ -67,13 +72,14 @@
             <label for="turma">Turma</label>
             <select id="turma">
               <option value="">Selecionar...</option>
+              <optgroup label="── Uso próprio ──">
+                <option>Professor</option>
+              </optgroup>
               <optgroup label="── Ensino Médio ──">
                 <option>1º A</option>
                 <option>1º B</option>
                 <option>2º A</option>
-                <option>2º B</option>
                 <option>3º A</option>
-                <option>3º B</option>
               </optgroup>
               <optgroup label="── Anos Finais ──">
                 <option>6º A</option>
@@ -101,7 +107,7 @@
           </div>
         </div>
 
-
+        <!-- Grade de números — só aparece quando "Alguns" -->
         <div id="disp-section" class="field" style="margin-top:12px">
           <label id="disp-label">Números dos dispositivos (opcional)</label>
           <div class="num-counter" id="num-counter" style="display:none">
@@ -153,13 +159,14 @@
             <label for="f-turma">Turma</label>
             <select id="f-turma">
               <option value="">Selecionar turma...</option>
+              <optgroup label="── Uso próprio ──">
+                <option>Professor</option>
+              </optgroup>
               <optgroup label="── Ensino Médio ──">
                 <option>1º A</option>
                 <option>1º B</option>
                 <option>2º A</option>
-                <option>2º B</option>
                 <option>3º A</option>
-                <option>3º B</option>
               </optgroup>
               <optgroup label="── Anos Finais ──">
                 <option>6º A</option>
@@ -223,10 +230,15 @@
             <label for="ag-carrinho">Carrinho</label>
             <select id="ag-carrinho">
               <option value="">Selecionar...</option>
-              <option>Carrinho 1 | Notebooks</option>
-              <option>Carrinho 2 | Notebooks</option>
-              <option>Carrinho 3 | ChromeBooks</option>
-              <option>Carrinho 4 | Tablets</option>
+              <optgroup label="── Carrinhos ──">
+                <option>Carrinho 1 | Notebooks</option>
+                <option>Carrinho 2 | Notebooks</option>
+                <option>Carrinho 3 | ChromeBooks</option>
+                <option>Carrinho 4 | Tablets</option>
+              </optgroup>
+              <optgroup label="── Laboratório ──">
+                <option>Informática</option>
+              </optgroup>
             </select>
           </div>
           <div class="field">
@@ -237,13 +249,14 @@
             <label for="ag-turma">Turma</label>
             <select id="ag-turma">
               <option value="">Selecionar...</option>
+              <optgroup label="── Uso próprio ──">
+                <option>Professor</option>
+              </optgroup>
               <optgroup label="── Ensino Médio ──">
                 <option>1º A</option>
                 <option>1º B</option>
                 <option>2º A</option>
-                <option>2º B</option>
                 <option>3º A</option>
-                <option>3º B</option>
               </optgroup>
               <optgroup label="── Anos Finais ──">
                 <option>6º A</option>
@@ -314,13 +327,14 @@
         <label>Turma</label>
         <select id="edit-turma">
           <option value="">Selecionar...</option>
+          <optgroup label="── Uso próprio ──">
+            <option>Professor</option>
+          </optgroup>
           <optgroup label="── Ensino Médio ──">
             <option>1º A</option>
             <option>1º B</option>
             <option>2º A</option>
-            <option>2º B</option>
             <option>3º A</option>
-            <option>3º B</option>
           </optgroup>
           <optgroup label="── Anos Finais ──">
             <option>6º A</option>
@@ -337,7 +351,7 @@
         </select>
       </div>
 
-
+      <!-- Grade de números — só para "parcial" -->
       <div id="edit-grid-wrap">
         <div class="num-counter" id="edit-counter" style="display:flex">
           <span id="edit-counter-text">0 selecionados</span>
@@ -369,13 +383,14 @@
         <label>Turma</label>
         <select id="fedit-turma">
           <option value="">Selecionar...</option>
+          <optgroup label="── Uso próprio ──">
+            <option>Professor</option>
+          </optgroup>
           <optgroup label="── Ensino Médio ──">
             <option>1º A</option>
             <option>1º B</option>
             <option>2º A</option>
-            <option>2º B</option>
             <option>3º A</option>
-            <option>3º B</option>
           </optgroup>
           <optgroup label="── Anos Finais ──">
             <option>6º A</option>
@@ -405,8 +420,15 @@
     ];
     const CARRINHOS_NOMES = ['Carrinho 1 | Notebooks', 'Carrinho 2 | Notebooks', 'Carrinho 3 | ChromeBooks', 'Carrinho 4 | Tablets'];
 
-    function anoDeturma(t) { return t.split(' ')[0]; }
-    function grupoDeAno(a) { for (const g of ANOS) { if (g.prefixos.includes(a)) return g.label; } return 'Outros'; }
+    function anoDeturma(t) {
+      if (t === 'Professor') return 'Prof.';
+      return t.split(' ')[0];
+    }
+    function grupoDeAno(a) {
+      if (a === 'Prof.') return 'Uso próprio';
+      for (const g of ANOS) { if (g.prefixos.includes(a)) return g.label; }
+      return 'Outros';
+    }
     function hoje() { return new Date().toDateString(); }
     function horaAgora() { return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }
     function dataStr() {
@@ -435,16 +457,22 @@
       if (!c) return 'NB';
       if (c.includes('Tablet')) return 'TB';
       if (c.includes('Chrome')) return 'CB';
+      if (c.includes('Informática') || c === 'Informática') return 'PC';
       return 'NB';
+    }
+
+    function isLaboratorio(c) {
+      return c === 'Informática';
     }
 
     function toggleQtd() {
       const tipo = document.getElementById('tipo-qtd').value;
+      const c = document.getElementById('carrinho').value;
       const qtdInput = document.getElementById('qtd');
       const dispSection = document.getElementById('disp-section');
-      if (tipo === 'total') {
-        qtdInput.value = ''; qtdInput.placeholder = 'Todo'; qtdInput.disabled = true; qtdInput.style.opacity = '0.4';
-
+      const lab = isLaboratorio(c);
+      if (tipo === 'total' || lab) {
+        qtdInput.value = ''; qtdInput.placeholder = lab ? '—' : 'Todo'; qtdInput.disabled = true; qtdInput.style.opacity = '0.4';
         dispSection.style.opacity = '0.35';
         dispSection.style.pointerEvents = 'none';
         tagsC = []; renderTags(); atualizarGrid();
@@ -518,7 +546,8 @@
       const qtdRaw = parseInt(document.getElementById('qtd').value) || 0;
       if (!c || !p || !turma) { alert('Preenche carrinho, professor/aluno e turma!'); return; }
       if (tipo === 'parcial' && !qtdRaw) { alert('Informe a quantidade!'); return; }
-      if (tipo === 'parcial' && qtdRaw > 0 && tagsC.length !== qtdRaw) {
+      const lab = isLaboratorio(c);
+      if (!lab && tipo === 'parcial' && qtdRaw > 0 && tagsC.length !== qtdRaw) {
         const diff = qtdRaw - tagsC.length;
         if (tagsC.length === 0) alert(`Selecione os ${qtdRaw} número${qtdRaw > 1 ? 's' : ''} antes de registrar.`);
         else if (diff > 0) alert(`Faltam ${diff} número${diff > 1 ? 's' : ''}. Selecionou ${tagsC.length} de ${qtdRaw}.`);
@@ -526,27 +555,23 @@
         return;
       }
 
-
       const data = carregarKey(KC);
-      const carrinhoCompletoFora = data.find(r => !r.devolvido && r.carrinho === c && r.total);
-      if (carrinhoCompletoFora) {
-        alert(`⚠️ ${c} está fora por completo com Prof. ${carrinhoCompletoFora.professor} (${carrinhoCompletoFora.turma}). Aguarde a devolução.`);
-        return;
-      }
 
-      if (tipo === 'total') {
-        const parcialFora = data.find(r => !r.devolvido && r.carrinho === c && !r.total);
-        if (parcialFora) {
-          alert(`⚠️ Parte do ${c} já está fora com Prof. ${parcialFora.professor} (${parcialFora.turma}). Devolva os dispositivos antes de registrar o carrinho completo.`);
+      if (!lab) {
+
+        const carrinhoCompletoFora = data.find(r => !r.devolvido && r.carrinho === c && r.total);
+        if (carrinhoCompletoFora) {
+          alert(`⚠️ ${c} já saiu por completo com Prof. ${carrinhoCompletoFora.professor} (${carrinhoCompletoFora.turma}). Aguarde a devolução.`);
           return;
         }
       }
 
+      const ehTotal = tipo === 'total' || lab;
       data.push({
         id: Date.now(), carrinho: c, professor: p, turma,
-        qtd: tipo === 'total' ? 999 : qtdRaw,
-        qtdLabel: tipo === 'total' ? 'carrinho completo' : qtdRaw,
-        total: tipo === 'total', dispositivos: [...tagsC],
+        qtd: ehTotal ? 999 : qtdRaw,
+        qtdLabel: lab ? 'Laboratório de informática' : ehTotal ? 'carrinho completo' : qtdRaw,
+        total: ehTotal, dispositivos: ehTotal ? [] : ([...tagsC]),
         hora: horaAgora(), devolvido: false
       });
       salvarKey(KC, data);
@@ -872,7 +897,23 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('carrinho').addEventListener('change', () => { tagsC = []; renderTags(); atualizarGrid(); });
+      document.getElementById('carrinho').addEventListener('change', () => {
+        tagsC = []; renderTags();
+        const c = document.getElementById('carrinho').value;
+        const lab = isLaboratorio(c);
+        const tipoSelect = document.getElementById('tipo-qtd');
+        const qtdWrap = document.querySelector('.qtd-tipo');
+        if (lab) {
+          tipoSelect.value = 'total';
+          tipoSelect.disabled = true;
+          tipoSelect.style.opacity = '0.4';
+        } else {
+          tipoSelect.disabled = false;
+          tipoSelect.style.opacity = '1';
+        }
+        toggleQtd();
+        atualizarGrid();
+      });
       document.getElementById('qtd').addEventListener('input', atualizarGrid);
       document.getElementById('tipo-qtd').addEventListener('change', atualizarGrid);
       atualizarGrid();
@@ -884,7 +925,7 @@
     let semanaOffset = 0;
 
     function carregarAgendamentos() {
-
+      // Limpa agendamentos com mais de 5 dias
       const dados = JSON.parse(localStorage.getItem(KAG) || '[]');
       const limite = new Date();
       limite.setDate(limite.getDate() - 5);
@@ -971,7 +1012,6 @@
       const hojeISO = fmtDataISO(hoje);
       const seg = getSegundaFeira(semanaOffset);
 
-      // Stats
       const agHoje = dados.filter(a => a.data === hojeISO);
       document.getElementById('ag-total').textContent = dados.length;
       document.getElementById('ag-hoje').textContent = agHoje.length;
