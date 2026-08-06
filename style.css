@@ -42,7 +42,7 @@
     --bg-warning: #412402;
     --text-warning: #fac775;
     --bg-success: #13944d;
-    --text-success: #ffffff;
+    --text-success: #707070;
     --bg-danger: #501313;
     --text-danger: #f7c1c1;
     --accent: #85b7eb;
@@ -877,6 +877,7 @@ button.primary:active {
   opacity: 0.88;
 }
 
+/* ── DESFAZER DEVOLUÇÃO ── */
 .btn-desfazer {
   font-size: 12px;
   padding: 5px 10px;
@@ -894,6 +895,7 @@ button.primary:active {
   color: var(--text-warning);
 }
 
+/* ── MODAL ── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -979,6 +981,7 @@ button.primary:active {
   opacity: 0.88;
 }
 
+/* ── BTN EDIT ── */
 .btn-edit {
   background: none;
   border: none;
@@ -993,10 +996,12 @@ button.primary:active {
   background: var(--accent-light);
 }
 
+/* ── RESUMO 4 COLUNAS ── */
 .resumo-4 {
   grid-template-columns: repeat(4, 1fr) !important;
 }
 
+/* ── SEMANA NAV ── */
 .semana-nav {
   display: flex;
   align-items: center;
@@ -1027,6 +1032,7 @@ button.primary:active {
   background: var(--surface-1);
 }
 
+/* ── DIAS ── */
 .ag-dia {
   background: var(--surface-2);
   border: 0.5px solid var(--border);
@@ -1074,6 +1080,7 @@ button.primary:active {
   color: var(--accent);
 }
 
+/* ── AG CARDS ── */
 .ag-card {
   display: flex;
   align-items: center;
@@ -1127,6 +1134,7 @@ button.primary:active {
   color: var(--text-muted);
 }
 
+/* ── FIELD-SM ── */
 .field-sm {
   flex: 0 0 160px !important;
   min-width: 0 !important;
