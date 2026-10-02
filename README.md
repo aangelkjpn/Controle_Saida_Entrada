@@ -4,6 +4,8 @@ Sistema web para controlar a **saída e devolução de equipamentos** da sala de
 
 Criado por iniciativa própria durante o estágio no **PROATI (SEDUC-SP)**, para substituir o controle feito no papel por algo rápido de usar no dia a dia da escola.
 
+**🔗 [Ver online](https://aangelkjpn.github.io/Controle_Saida_Entrada/)** · teste direto no navegador, os dados ficam salvos só no seu computador.
+
 <p align="center">
   <img src="./docs/tela-carrinhos.png" width="800" alt="Tela de controle dos carrinhos">
 </p>
